@@ -1,7 +1,13 @@
 package com.example.witnessitproject.ui.theme.screens.dashboard
 
-package com.example.witnessitproject.screens.dashboard
-
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
+import com.example.witnessitproject.ui.theme.data.ReportViewModel
+import com.example.witnessitproject.ui.theme.models.ReportModel
+import com.example.witnessitproject.ui.theme.navigation.ROUTE_NEW_REPORT
+import com.example.witnessitproject.ui.theme.navigation.ROUTE_SEARCH
 import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,10 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.witnessitproject.data.ReportViewModel
-import com.example.witnessitproject.models.ReportModel
-import com.example.witnessitproject.navigation.ROUTE_NEW_REPORT
-import com.example.witnessitproject.navigation.ROUTE_SEARCH
+
+
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
