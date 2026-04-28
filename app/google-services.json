@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "205381490369",
+    "project_id": "witnessit",
+    "storage_bucket": "witnessit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:205381490369:android:2d890d9d02bde1dc3de640",
+        "android_client_info": {
+          "package_name": "com.company.WitnessIt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmD_1forvb9GIwpWp9UywgvrjwWXFPniY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:205381490369:android:10055e324c8fa6b13de640",
+        "android_client_info": {
+          "package_name": "com.example.witnessitproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmD_1forvb9GIwpWp9UywgvrjwWXFPniY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
