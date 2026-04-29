@@ -4,8 +4,6 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
-import com.example.witnessitproject.ui.theme.data.ReportViewModel
-import com.example.witnessitproject.ui.theme.models.ReportModel
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_NEW_REPORT
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_SEARCH
 import android.content.Context
@@ -18,6 +16,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -31,9 +31,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.witnessitproject.data.ReportViewModel
+import com.example.witnessitproject.ui.theme.models.ReportModel
+import com.example.witnessitproject.ui.theme.navigation.ROUTE_LOGIN
 
 
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -91,6 +95,9 @@ fun HomeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Top bar
+
+            var showMenu by remember { mutableStateOf(false) }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -101,11 +108,51 @@ fun HomeScreen(navController: NavController) {
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium
                 )
-                IconButton(onClick = { navController.navigate(ROUTE_SEARCH) }) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search"
-                    )
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Search icon
+                    IconButton(onClick = { navController.navigate(ROUTE_SEARCH) }) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search"
+                        )
+                    }
+
+                    // Overflow menu (three dots)
+                    Box {
+                        IconButton(onClick = { showMenu = true }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More options"
+                            )
+                        }
+
+                        // Dropdown menu
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Logout") },
+                                onClick = {
+                                    showMenu = false
+                                    FirebaseAuth.getInstance().signOut()
+                                    navController.navigate(ROUTE_LOGIN) {
+                                        // Clear entire back stack so user
+                                        // can't press back into the app
+                                        popUpTo(0) { inclusive = true }
+                                    }
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.ExitToApp,
+                                        contentDescription = "Logout",
+                                        tint = Color(0xFF993C1D)
+                                    )
+                                }
+                            )
+                        }
+                    }
                 }
             }
 
@@ -369,7 +416,7 @@ fun BottomNavBar(navController: NavController) {
     NavigationBar(containerColor = Color.White) {
         NavigationBarItem(
             selected = currentRoute == "home",
-            onClick = { navController.navigate("home") },
+            onClick = { navController.navigate("dashboard") },
             icon = {
                 Icon(
                     androidx.compose.material.icons.Icons.Default.Home,
@@ -391,7 +438,7 @@ fun BottomNavBar(navController: NavController) {
         )
         NavigationBarItem(
             selected = currentRoute == "my_reports",
-            onClick = { navController.navigate("my_reports") },
+            onClick = { navController.navigate("myreports") },
             icon = {
                 Icon(
                     androidx.compose.material.icons.Icons.Default.List,

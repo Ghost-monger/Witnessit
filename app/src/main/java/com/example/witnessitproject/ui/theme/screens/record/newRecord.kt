@@ -1,6 +1,5 @@
 package com.example.witnessitproject.ui.theme.screens.record
 
-
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,23 +23,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.launch
-import java.util.UUID
-
-
+import com.example.witnessitproject.data.ReportViewModel
 
 @Composable
 fun NewRecordScreen(navController: NavController) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+
+    // ViewModel — handles all uploads and Firestore saving
+    val viewModel: ReportViewModel = viewModel()
 
     // Form fields
     var scamType by remember { mutableStateOf("M-Pesa") }
@@ -49,16 +46,13 @@ fun NewRecordScreen(navController: NavController) {
 
     // Image state
     var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
-    var isUploading by remember { mutableStateOf(false) }
-    var uploadProgress by remember { mutableStateOf("") }
 
     val scamTypes = listOf("M-Pesa", "Phone", "Website", "Email", "Other")
 
-    // Gallery picker — allows multiple images
+    // Gallery picker — multiple images
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
-        // Limit to 5 images max
         val combined = (selectedImages + uris).distinct().take(5)
         selectedImages = combined
     }
@@ -69,20 +63,28 @@ fun NewRecordScreen(navController: NavController) {
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        Text("Report a scam", fontSize = 20.sp,
-            fontWeight = androidx.compose.ui.text.font.FontWeight.Medium)
+        // Header
+        Text(
+            text = "Report a scam",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Medium
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Scam type selector
+        // Scam type chips
         Text("Scam type", fontSize = 13.sp, color = Color.Gray)
         Spacer(modifier = Modifier.height(6.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            scamTypes.forEach { type ->
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(scamTypes) { type ->
                 FilterChip(
                     selected = scamType == type,
                     onClick = { scamType = type },
-                    label = { Text(type, fontSize = 12.sp) }
+                    label = { Text(type, fontSize = 12.sp) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = Color(0xFFFAECE7),
+                        selectedLabelColor = Color(0xFF712B13)
+                    )
                 )
             }
         }
@@ -117,12 +119,12 @@ fun NewRecordScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Image section
+        // Image picker section
         Text("Screenshots / evidence (max 5)", fontSize = 13.sp, color = Color.Gray)
         Spacer(modifier = Modifier.height(8.dp))
 
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            // Add button — always first
+            // Add photo button — always first
             item {
                 Box(
                     modifier = Modifier
@@ -140,14 +142,17 @@ fun NewRecordScreen(navController: NavController) {
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.Add, contentDescription = "Add image",
-                            tint = Color.Gray)
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = "Add image",
+                            tint = Color.Gray
+                        )
                         Text("Add photo", fontSize = 11.sp, color = Color.Gray)
                     }
                 }
             }
 
-            // Selected images
+            // Preview selected images
             items(selectedImages) { uri ->
                 Box(modifier = Modifier.size(90.dp)) {
                     AsyncImage(
@@ -167,109 +172,46 @@ fun NewRecordScreen(navController: NavController) {
                             .size(22.dp)
                             .align(Alignment.TopEnd)
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "Remove",
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "Remove",
                             tint = Color.White,
-                            modifier = Modifier.size(16.dp))
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        Text("${selectedImages.size}/5 photos added", fontSize = 11.sp, color = Color.Gray)
+        Text(
+            "${selectedImages.size}/5 photos added",
+            fontSize = 11.sp,
+            color = Color.Gray
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Upload progress
-        if (uploadProgress.isNotEmpty()) {
-            Text(uploadProgress, fontSize = 12.sp, color = Color.Gray)
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        // Submit button
+        // Submit button — calls ViewModel directly, no await, no suspend function
         Button(
             onClick = {
                 if (target.isBlank() || description.isBlank()) return@Button
-                scope.launch {
-                    submitReport(
-                        scamType = scamType,
-                        target = target,
-                        description = description,
-                        imageUris = selectedImages,
-                        onProgress = { uploadProgress = it },
-                        onSuccess = { navController.popBackStack() },
-                        onError = { uploadProgress = "Error: $it" }
-                    )
-                }
+                viewModel.submitReport(
+                    imageUris = selectedImages,
+                    scamType = scamType,
+                    target = target,
+                    description = description,
+                    context = context,
+                    navController = navController
+                )
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isUploading && target.isNotBlank() && description.isNotBlank()
-        ) {
-            if (isUploading) {
-                CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
-            } else {
-                Text("Submit report")
-            }
-        }
-    }
-}
-
-// Uploads images to Firebase Storage then saves report to Firestore
-suspend fun submitReport(
-    scamType: String,
-    target: String,
-    description: String,
-    imageUris: List<Uri>,
-    onProgress: (String) -> Unit,
-    onSuccess: () -> Unit,
-    onError: (String) -> Unit
-) {
-    val storage = FirebaseStorage.getInstance()
-    val firestore = FirebaseFirestore.getInstance()
-    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-
-    val imageUrls = mutableListOf<String>()
-
-    // Upload each image to Firebase Storage
-    imageUris.forEachIndexed { index, uri ->
-        onProgress("Uploading image ${index + 1} of ${imageUris.size}...")
-        val filename = "reports/${userId}/${UUID.randomUUID()}.jpg"
-        val ref = storage.reference.child(filename)
-
-        try {
-            val uploadTask = ref.putFile(uri)
-            // Wait for upload to complete
-            val taskSnapshot = kotlinx.coroutines.tasks.await(uploadTask)
-            val downloadUrl = kotlinx.coroutines.tasks.await(
-                taskSnapshot.storage.downloadUrl
+            enabled = target.isNotBlank() && description.isNotBlank(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF993C1D)
             )
-            imageUrls.add(downloadUrl.toString())
-        } catch (e: Exception) {
-            onError(e.message ?: "Upload failed")
-            return
+        ) {
+            Text("Submit report", color = Color.White)
         }
-    }
-
-    // Save report to Firestore
-    onProgress("Saving report...")
-    val report = hashMapOf(
-        "scamType" to scamType,
-        "target" to target,
-        "description" to description,
-        "evidenceUrls" to imageUrls,  // list of download URLs
-        "upvotes" to 0,
-        "reportedBy" to userId,
-        "timestamp" to com.google.firebase.Timestamp.now(),
-        "verified" to false
-    )
-
-    try {
-        kotlinx.coroutines.tasks.await(
-            firestore.collection("reports").add(report)
-        )
-        onProgress("")
-        onSuccess()
-    } catch (e: Exception) {
-        onError(e.message ?: "Failed to save report")
     }
 }

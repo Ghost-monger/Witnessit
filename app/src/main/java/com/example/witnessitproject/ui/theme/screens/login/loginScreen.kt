@@ -1,13 +1,15 @@
 package com.example.witnessitproject.ui.theme.screens.login
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,30 +28,30 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.witnessitproject.ui.theme.data.AuthViewModel
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_REGISTER
-import com.example.witnessitproject.ui.theme.screens.register.ParkField
 
-// ── Same colour tokens as Dashboard & Register ─────────────
-private val NavyDark   = Color(0xFF0A0F1E)
-private val NavyMid    = Color(0xFF0D1630)
-private val NavyCard   = Color(0xFF131D3B)
-private val NavyBorder = Color(0xFF1E2D5A)
-private val Amber      = Color(0xFFF5C842)
+// ── FakeAlert KE Theme ───────────────────────────
+private val DarkBg     = Color(0xFF0A0F1E)
+private val CardBg     = Color(0xFF131D3B)
+private val Border     = Color(0xFF1E2D5A)
+private val Accent     = Color(0xFF993C1D) // FakeAlert red
 private val BlueAccent = Color(0xFF7B9FFF)
 private val TextMuted  = Color(0xFF7A8AB5)
-val TextDim    = Color(0xFF5A6A90)
+private val TextDim    = Color(0xFF5A6A90)
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    var email           by remember { mutableStateOf("") }
-    var password        by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    val authViewModel: AuthViewModel = viewModel()
+
     val context = LocalContext.current
+    val authViewModel: AuthViewModel = viewModel()
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(NavyDark),
+            .background(DarkBg),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -59,100 +61,148 @@ fun LoginScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // ── Brand header ───────────────────────────
+            // App icon
             Box(
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(82.dp)
                     .clip(CircleShape)
-                    .background(NavyCard),
+                    .background(CardBg),
                 contentAlignment = Alignment.Center
             ) {
-                Text("🅿", fontSize = 32.sp)
+                Text(text = "🚨", fontSize = 34.sp)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // App name
             Text(
-                text = "ParkSmart",
+                text = "FakeAlert KE",
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
-                color = Amber
-            )
-            Text(
-                text = "Smart Parking Made Easy",
-                fontSize = 12.sp,
-                color = TextDim,
-                modifier = Modifier.padding(bottom = 28.dp)
+                color = Accent
             )
 
-            // ── Login card ─────────────────────────────
+            Text(
+                text = "Report scams. Warn others. Stay safe.",
+                fontSize = 12.sp,
+                color = TextDim,
+                modifier = Modifier.padding(bottom = 18.dp)
+            )
+
+            Text(
+                text = "🔒 Secure community scam database",
+                fontSize = 11.sp,
+                color = TextMuted,
+                modifier = Modifier.padding(bottom = 18.dp)
+            )
+
+            // Login card
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = NavyMid),
-                border = androidx.compose.foundation.BorderStroke(1.dp, NavyBorder)
+                colors = CardDefaults.cardColors(containerColor = CardBg),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Border)
             ) {
                 Column(
-                    modifier = Modifier.padding(horizontal = 22.dp, vertical = 28.dp),
+                    modifier = Modifier.padding(22.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
 
-                    // Email
-                    ParkField(
-                        label = "EMAIL",
-                        value = email,
-                        onValueChange = { email = it },
-                        placeholder = "example@email.com",
-                        leadingIcon = { Icon(Icons.Default.Email, null, tint = TextDim) }
-                    )
-
-                    // Password
-                    ParkField(
-                        label = "PASSWORD",
-                        value = password,
-                        onValueChange = { password = it },
-                        placeholder = "Enter your password",
-                        leadingIcon = { Icon(Icons.Default.Lock, null, tint = TextDim) },
-                        trailingIcon = {
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(
-                                    imageVector = if (passwordVisible) Icons.Default.VisibilityOff
-                                    else Icons.Default.Visibility,
-                                    contentDescription = null,
-                                    tint = TextDim
-                                )
-                            }
-                        },
-                        visualTransformation = if (passwordVisible) VisualTransformation.None
-                        else PasswordVisualTransformation()
-                    )
-
-                    // Forgot password
-                    Text(
-                        text = "Forgot password?",
-                        color = BlueAccent,
-                        fontSize = 12.sp,
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .clickable { /* TODO: forgot password */ }
-                    )
-
-                    // Login button
-                    Button(
-                        onClick = { authViewModel.login(
-                            email=email,
-                            password=password,
-                            navController=navController,
-                            context=context
+                    // Email field
+                    Column {
+                        Text(
+                            text = "EMAIL",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = TextMuted,
+                            modifier = Modifier.padding(bottom = 6.dp)
                         )
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            placeholder = {
+                                Text("Enter your email", color = TextDim, fontSize = 14.sp)
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Email, null, tint = TextDim)
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Accent,
+                                unfocusedBorderColor = Border,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                cursorColor = Accent
+                            )
+                        )
+                    }
+
+                    // Password field
+                    Column {
+                        Text(
+                            text = "PASSWORD",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = TextMuted,
+                            modifier = Modifier.padding(bottom = 6.dp)
+                        )
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            placeholder = {
+                                Text("Enter your password", color = TextDim, fontSize = 14.sp)
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Lock, null, tint = TextDim)
+                            },
+                            trailingIcon = {
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(
+                                        imageVector = if (passwordVisible)
+                                            Icons.Default.VisibilityOff
+                                        else
+                                            Icons.Default.Visibility,
+                                        contentDescription = null,
+                                        tint = TextDim
+                                    )
+                                }
+                            },
+                            visualTransformation = if (passwordVisible)
+                                VisualTransformation.None
+                            else
+                                PasswordVisualTransformation(),
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Accent,
+                                unfocusedBorderColor = Border,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                cursorColor = Accent
+                            )
+                        )
+                    }
+
+                    // Login button — calls AuthViewModel.login() directly
+                    Button(
+                        onClick = {
+                            authViewModel.login(
+                                email = email,
+                                password = password,
+                                navController = navController,
+                                context = context
+                            )
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Amber,
-                            contentColor = NavyDark
+                            containerColor = Accent,
+                            contentColor = Color.White
                         )
                     ) {
                         Text(
@@ -164,13 +214,18 @@ fun LoginScreen(navController: NavController) {
                 }
             }
 
-            // ── Register link ──────────────────────────
             Spacer(modifier = Modifier.height(18.dp))
-            Row(horizontalArrangement = Arrangement.Center) {
-                Text("Don't have an account? ", color = TextDim, fontSize = 13.sp)
+
+            // Register link
+            Row {
                 Text(
-                    text = "Register here",
-                    color = Amber,
+                    text = "New here? ",
+                    color = TextDim,
+                    fontSize = 13.sp
+                )
+                Text(
+                    text = "Create account",
+                    color = Accent,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.clickable {

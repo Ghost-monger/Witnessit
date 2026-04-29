@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "205381490369",
+    "firebase_url": "https://witnessit-default-rtdb.firebaseio.com",
     "project_id": "witnessit",
     "storage_bucket": "witnessit.firebasestorage.app"
   },
