@@ -1,5 +1,6 @@
 package com.example.witnessitproject.ui.theme.screens.profile
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -15,9 +16,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,13 +34,14 @@ import com.example.witnessitproject.ui.theme.navigation.ROUTE_LOGIN
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-// ── FakeAlert KE Theme ───────────────────────────
-private val DarkBg    = Color(0xFF0A0F1E)
-private val CardBg    = Color(0xFF131D3B)
-private val Border    = Color(0xFF1E2D5A)
-private val Accent    = Color(0xFF993C1D)
-private val TextMuted = Color(0xFF7A8AB5)
-private val TextDim   = Color(0xFF5A6A90)
+// ── Enhanced WitnessIt Tech Theme ───────────────────────────
+private val DarkBg      = Color(0xFF05070A)
+private val CardBg      = Color(0xFF0D1321)
+private val Border      = Color(0xFF1E2D5A)
+private val Accent      = Color(0xFFFF3D00) // Safety Orange
+private val NeonCyan    = Color(0xFF00E5FF) // Tech Blue
+private val TextMuted   = Color(0xFF94A3B8)
+private val TextDim     = Color(0xFF475569)
 
 @Composable
 fun ProfileScreen(navController: NavController) {
@@ -43,17 +49,11 @@ fun ProfileScreen(navController: NavController) {
     val authViewModel: AuthViewModel = viewModel()
     val reportViewModel: ReportViewModel = viewModel()
 
-    // Get current Firebase Auth user
     val currentUser = FirebaseAuth.getInstance().currentUser
-
-    // User data state — pulled from Realtime Database
     var username by remember { mutableStateOf("") }
     var phonenumber by remember { mutableStateOf("") }
-
-    // Logout dialog state
     var showLogoutDialog by remember { mutableStateOf(false) }
 
-    // Fetch user profile data from Firebase Realtime Database
     LaunchedEffect(Unit) {
         reportViewModel.fetchMyReports(context)
         currentUser?.uid?.let { uid ->
@@ -67,312 +67,215 @@ fun ProfileScreen(navController: NavController) {
         }
     }
 
-    // Logout confirmation dialog
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Log out?", color = Color.White) },
-            text = {
-                Text(
-                    "You will be returned to the login screen.",
-                    color = TextMuted
-                )
-            },
+            title = { Text("TERMINATE SESSION?", color = Color.White, fontWeight = FontWeight.Black) },
+            text = { Text("Are you sure you want to disconnect from the secure network?", color = TextMuted) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         showLogoutDialog = false
                         authViewModel.logout()
-                        navController.navigate(ROUTE_LOGIN) {
-                            popUpTo(0) { inclusive = true }
-                        }
+                        navController.navigate(ROUTE_LOGIN) { popUpTo(0) { inclusive = true } }
                     }
-                ) {
-                    Text("Log out", color = Accent, fontWeight = FontWeight.Bold)
-                }
+                ) { Text("TERMINATE", color = Accent, fontWeight = FontWeight.Bold) }
             },
             dismissButton = {
-                TextButton(onClick = { showLogoutDialog = false }) {
-                    Text("Cancel", color = TextMuted)
-                }
+                TextButton(onClick = { showLogoutDialog = false }) { Text("CANCEL", color = TextMuted) }
             },
             containerColor = CardBg,
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(20.dp)
         )
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(DarkBg)
     ) {
-
-        // ── Top bar ──────────────────────────────────
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 8.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
-                }
-                Text(
-                    text = "Profile",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
+        // --- VISUAL LAYER: Background Tech Mesh ---
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(Accent.copy(alpha = 0.08f), Color.Transparent),
+                    center = Offset(size.width * 0.9f, size.height * 0.4f),
+                    radius = 900f
                 )
-            }
-
-            // Logout icon button
-            IconButton(onClick = { showLogoutDialog = true }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                    contentDescription = "Logout",
-                    tint = Accent
-                )
-            }
+            )
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // ── Avatar + name ─────────────────────────
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = CardBg),
-                border = androidx.compose.foundation.BorderStroke(0.5.dp, Border)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    // Avatar circle with first letter of username
-                    Box(
-                        modifier = Modifier
-                            .size(72.dp)
-                            .clip(CircleShape)
-                            .background(Accent.copy(alpha = 0.2f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = if (username.isNotBlank())
-                                username.first().uppercaseChar().toString()
-                            else "?",
-                            fontSize = 30.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Accent
-                        )
-                    }
-
-                    // Username
-                    Text(
-                        text = if (username.isNotBlank()) username else "Loading...",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-
-                    // Community member badge
-                    Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = Accent.copy(alpha = 0.15f)
-                    ) {
-                        Text(
-                            text = "🛡 Community member",
-                            fontSize = 12.sp,
-                            color = Accent,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                        )
-                    }
-                }
-            }
-
-            // ── Stats row ─────────────────────────────
+        Column(modifier = Modifier.fillMaxSize()) {
+            // ── Top Bar ──────────────────────────────────
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                StatItem(
-                    modifier = Modifier.weight(1f),
-                    value = "${reportViewModel.myReports.size}",
-                    label = "Reports"
-                )
-                StatItem(
-                    modifier = Modifier.weight(1f),
-                    value = "${reportViewModel.myReports.sumOf { it.upvotes }}",
-                    label = "Flags received"
-                )
-                StatItem(
-                    modifier = Modifier.weight(1f),
-                    value = "${reportViewModel.myReports.count { it.verified }}",
-                    label = "Confirmed"
-                )
-            }
-
-            // ── Account info ──────────────────────────
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CardBg),
-                border = androidx.compose.foundation.BorderStroke(0.5.dp, Border)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(0.dp)
-                ) {
-                    Text(
-                        text = "ACCOUNT INFO",
-                        fontSize = 11.sp,
-                        color = TextMuted,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-
-                    ProfileInfoRow(
-                        icon = Icons.Default.Person,
-                        label = "Username",
-                        value = username.ifBlank { "—" }
-                    )
-
-                    HorizontalDivider(
-                        color = Border,
-                        modifier = Modifier.padding(vertical = 10.dp)
-                    )
-
-                    ProfileInfoRow(
-                        icon = Icons.Default.Email,
-                        label = "Email",
-                        value = currentUser?.email ?: "—"
-                    )
-
-                    HorizontalDivider(
-                        color = Border,
-                        modifier = Modifier.padding(vertical = 10.dp)
-                    )
-
-                    ProfileInfoRow(
-                        icon = Icons.Default.Phone,
-                        label = "Phone",
-                        value = phonenumber.ifBlank { "—" }
-                    )
-                }
-            }
-
-            // ── Logout button ─────────────────────────
-            Button(
-                onClick = { showLogoutDialog = true },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Accent
-                )
+                    .statusBarsPadding()
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Log out",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = NeonCyan)
+                    }
+                    Text(
+                        text = "OPERATOR PROFILE",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color.White,
+                        letterSpacing = 1.sp
+                    )
+                }
+                IconButton(onClick = { showLogoutDialog = true }) {
+                    Icon(Icons.AutoMirrored.Filled.ExitToApp, "Logout", tint = Accent)
+                }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // ── Avatar Card (Digital ID Style) ─────────────────────────
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(28.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBg),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Border)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(84.dp)
+                                .clip(CircleShape)
+                                .background(Brush.linearGradient(listOf(Accent.copy(0.2f), Color.Transparent))),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (username.isNotBlank()) username.first().uppercase() else "?",
+                                style = TextStyle(
+                                    fontSize = 36.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = Accent,
+                                    shadow = Shadow(color = Accent, blurRadius = 15f)
+                                )
+                            )
+                        }
+
+                        Text(
+                            text = if (username.isNotBlank()) username.uppercase() else "INITIALIZING...",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color.White,
+                            letterSpacing = 1.sp
+                        )
+
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = Accent.copy(alpha = 0.15f),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Accent.copy(0.3f))
+                        ) {
+                            Text(
+                                text = "🛡 VERIFIED OPERATOR",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Accent,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+
+                // ── Stats row (Telemetry Style) ─────────────────────────────
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    StatItem(Modifier.weight(1f), "${reportViewModel.myReports.size}", "LOGS", NeonCyan)
+                    StatItem(Modifier.weight(1f), "${reportViewModel.myReports.sumOf { it.upvotes }}", "FLAGS", Accent)
+                    StatItem(Modifier.weight(1f), "${reportViewModel.myReports.count { it.verified }}", "CLEAR", Color.Green)
+                }
+
+                // ── Account info ──────────────────────────
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBg.copy(alpha = 0.6f)),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Border)
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text(
+                            text = "SYSTEM CREDENTIALS",
+                            fontSize = 10.sp,
+                            color = NeonCyan,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 2.sp,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+
+                        ProfileInfoRow(Icons.Default.Person, "CODENAME", username.ifBlank { "—" })
+                        HorizontalDivider(color = Border, modifier = Modifier.padding(vertical = 12.dp))
+                        ProfileInfoRow(Icons.Default.Email, "NETWORK ID", currentUser?.email ?: "—")
+                        HorizontalDivider(color = Border, modifier = Modifier.padding(vertical = 12.dp))
+                        ProfileInfoRow(Icons.Default.Phone, "COMMS LINE", phonenumber.ifBlank { "—" })
+                    }
+                }
+
+                // ── Logout button ─────────────────────────
+                Button(
+                    onClick = { showLogoutDialog = true },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Accent)
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ExitToApp, null, tint = Color.White, modifier = Modifier.size(20.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text("DISCONNECT SESSION", fontWeight = FontWeight.Black, letterSpacing = 1.sp)
+                }
+            }
         }
     }
 }
 
-// Single info row — icon + label + value
 @Composable
-fun ProfileInfoRow(
-    icon: ImageVector,
-    label: String,
-    value: String
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = TextMuted,
-            modifier = Modifier.size(18.dp)
-        )
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = label,
-                fontSize = 11.sp,
-                color = TextMuted
-            )
-            Text(
-                text = value,
-                fontSize = 14.sp,
-                color = Color.White
-            )
+fun ProfileInfoRow(icon: ImageVector, label: String, value: String) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Icon(icon, null, tint = TextDim, modifier = Modifier.size(20.dp))
+        Column {
+            Text(label, fontSize = 9.sp, color = TextDim, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+            Text(value, fontSize = 15.sp, color = Color.White, fontWeight = FontWeight.Medium)
         }
     }
 }
 
-// Stat item for profile stats row
 @Composable
-fun StatItem(
-    modifier: Modifier = Modifier,
-    value: String,
-    label: String
-) {
+fun StatItem(modifier: Modifier = Modifier, value: String, label: String, color: Color) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = CardBg),
-        border = androidx.compose.foundation.BorderStroke(0.5.dp, Border)
+        border = androidx.compose.foundation.BorderStroke(1.dp, Border)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = value,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = Accent
+                value,
+                style = TextStyle(
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Black,
+                    color = color,
+                    shadow = Shadow(color = color.copy(0.4f), blurRadius = 8f)
+                )
             )
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = label,
-                fontSize = 10.sp,
-                color = TextMuted,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-            )
+            Text(label, fontSize = 9.sp, color = TextDim, fontWeight = FontWeight.Bold)
         }
     }
 }

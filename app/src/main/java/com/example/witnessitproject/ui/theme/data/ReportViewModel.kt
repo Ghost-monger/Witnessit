@@ -236,4 +236,74 @@ class ReportViewModel : ViewModel() {
 
         return secureUrl ?: throw Exception("Failed to get image URL")
     }
+    fun updateReport(
+        reportId: String,
+        scamType: String,
+        target: String,
+        description: String,
+        imageUris: List<Uri>,
+        existingUrls: List<String>,
+        context: Context,
+        navController: NavController
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Upload any new images to Cloudinary
+                val newImageUrls = mutableListOf<String>()
+                imageUris.forEachIndexed { index, uri ->
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "Uploading image ${index + 1} of ${imageUris.size}...",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    val url = uploadToCloudinary(context, uri)
+                    newImageUrls.add(url)
+                }
+
+                // Combine existing URLs + newly uploaded URLs
+                val allImageUrls = existingUrls + newImageUrls
+
+                // Build updated fields map
+                val updates = mapOf(
+                    "scamType" to scamType,
+                    "target" to target,
+                    "description" to description,
+                    "evidenceUrls" to allImageUrls
+                )
+
+                // Update Firestore document
+                withContext(Dispatchers.Main) {
+                    firestore.collection("reports")
+                        .document(reportId)
+                        .update(updates)
+                        .addOnSuccessListener {
+                            Toast.makeText(
+                                context,
+                                "Report updated successfully",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            fetchReports(context)
+                            navController.popBackStack()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(
+                                context,
+                                "Update failed: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "Error: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
 }

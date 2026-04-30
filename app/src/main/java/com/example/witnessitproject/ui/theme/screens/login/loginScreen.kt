@@ -1,5 +1,6 @@
 package com.example.witnessitproject.ui.theme.screens.login
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,8 +16,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -29,14 +34,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.witnessitproject.ui.theme.data.AuthViewModel
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_REGISTER
 
-// ── FakeAlert KE Theme ───────────────────────────
-private val DarkBg     = Color(0xFF0A0F1E)
-private val CardBg     = Color(0xFF131D3B)
-private val Border     = Color(0xFF1E2D5A)
-private val Accent     = Color(0xFF993C1D) // FakeAlert red
-private val BlueAccent = Color(0xFF7B9FFF)
-private val TextMuted  = Color(0xFF7A8AB5)
-private val TextDim    = Color(0xFF5A6A90)
+// ── Enhanced WitnessIt / FakeAlert KE Tech Theme ───────────────────────────
+private val DarkBg      = Color(0xFF05070A) // Deep Tech Black
+private val CardBg      = Color(0xFF0D1321) // Navy-tinged Slate
+private val Border      = Color(0xFF1E2D5A) // Structural Blue
+private val Accent      = Color(0xFFFF3D00) // Vibrant Safety Orange/Red
+private val NeonCyan    = Color(0xFF00E5FF) // Techy Cyber Blue
+private val TextMuted   = Color(0xFF94A3B8)
+private val TextDim     = Color(0xFF475569)
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -54,6 +59,17 @@ fun LoginScreen(navController: NavController) {
             .background(DarkBg),
         contentAlignment = Alignment.Center
     ) {
+        // Subtle Background Glow for that "Interactive" feel
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(Accent.copy(alpha = 0.12f), Color.Transparent),
+                    center = Offset(size.width * 0.9f, size.height * 0.1f),
+                    radius = 1000f
+                )
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -61,76 +77,82 @@ fun LoginScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // App icon
+            // App icon with glowing border
             Box(
                 modifier = Modifier
-                    .size(82.dp)
+                    .size(86.dp)
                     .clip(CircleShape)
-                    .background(CardBg),
+                    .background(Brush.linearGradient(listOf(CardBg, Border))),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "🚨", fontSize = 34.sp)
+                Text(text = "🚨", fontSize = 38.sp)
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // App name
+            // App name with techy shadow
             Text(
-                text = "FakeAlert KE",
-                fontSize = 26.sp,
+                text = "WITNESS IT KE",
+                style = TextStyle(
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color.White,
+                    letterSpacing = 2.sp,
+                    shadow = Shadow(color = Accent.copy(alpha = 0.5f), blurRadius = 15f)
+                )
+            )
+
+            Text(
+                text = "COMMUNITY INTELLIGENCE SYSTEM",
+                fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
-                color = Accent
+                color = NeonCyan,
+                letterSpacing = 1.5.sp,
+                modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
             )
 
             Text(
-                text = "Report scams. Warn others. Stay safe.",
-                fontSize = 12.sp,
-                color = TextDim,
-                modifier = Modifier.padding(bottom = 18.dp)
-            )
-
-            Text(
-                text = "🔒 Secure community scam database",
+                text = "🔒 Secure database connection active",
                 fontSize = 11.sp,
                 color = TextMuted,
-                modifier = Modifier.padding(bottom = 18.dp)
+                modifier = Modifier.padding(bottom = 24.dp)
             )
 
-            // Login card
+            // Login card - Glassmorphism style
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = CardBg),
+                shape = RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(containerColor = CardBg.copy(alpha = 0.9f)),
                 border = androidx.compose.foundation.BorderStroke(1.dp, Border)
             ) {
                 Column(
-                    modifier = Modifier.padding(22.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    modifier = Modifier.padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(18.dp)
                 ) {
 
                     // Email field
                     Column {
                         Text(
-                            text = "EMAIL",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = TextMuted,
-                            modifier = Modifier.padding(bottom = 6.dp)
+                            text = "OPERATOR ID",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = NeonCyan.copy(alpha = 0.8f),
+                            modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
                         )
                         OutlinedTextField(
                             value = email,
                             onValueChange = { email = it },
                             placeholder = {
-                                Text("Enter your email", color = TextDim, fontSize = 14.sp)
+                                Text("email@witnessit.ke", color = TextDim, fontSize = 14.sp)
                             },
                             leadingIcon = {
-                                Icon(Icons.Default.Email, null, tint = TextDim)
+                                Icon(Icons.Default.Email, null, tint = Accent.copy(alpha = 0.8f))
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(14.dp),
                             singleLine = true,
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Accent,
+                                focusedBorderColor = NeonCyan,
                                 unfocusedBorderColor = Border,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
@@ -142,20 +164,20 @@ fun LoginScreen(navController: NavController) {
                     // Password field
                     Column {
                         Text(
-                            text = "PASSWORD",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = TextMuted,
-                            modifier = Modifier.padding(bottom = 6.dp)
+                            text = "ACCESS KEY",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = NeonCyan.copy(alpha = 0.8f),
+                            modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
                         )
                         OutlinedTextField(
                             value = password,
                             onValueChange = { password = it },
                             placeholder = {
-                                Text("Enter your password", color = TextDim, fontSize = 14.sp)
+                                Text("••••••••", color = TextDim, fontSize = 14.sp)
                             },
                             leadingIcon = {
-                                Icon(Icons.Default.Lock, null, tint = TextDim)
+                                Icon(Icons.Default.Lock, null, tint = Accent.copy(alpha = 0.8f))
                             },
                             trailingIcon = {
                                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -174,10 +196,10 @@ fun LoginScreen(navController: NavController) {
                             else
                                 PasswordVisualTransformation(),
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(14.dp),
                             singleLine = true,
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Accent,
+                                focusedBorderColor = NeonCyan,
                                 unfocusedBorderColor = Border,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
@@ -186,7 +208,9 @@ fun LoginScreen(navController: NavController) {
                         )
                     }
 
-                    // Login button — calls AuthViewModel.login() directly
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    // Login button — tech refined
                     Button(
                         onClick = {
                             authViewModel.login(
@@ -198,36 +222,37 @@ fun LoginScreen(navController: NavController) {
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(14.dp),
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Accent,
                             contentColor = Color.White
                         )
                     ) {
                         Text(
-                            text = "Login",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold
+                            text = "INITIALIZE SESSION",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 1.sp
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Register link
             Row {
                 Text(
-                    text = "New here? ",
+                    text = "New operator? ",
                     color = TextDim,
                     fontSize = 13.sp
                 )
                 Text(
-                    text = "Create account",
-                    color = Accent,
+                    text = "Request Access",
+                    color = NeonCyan,
                     fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable {
                         navController.navigate(ROUTE_REGISTER)
                     }

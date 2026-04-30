@@ -1,7 +1,9 @@
 package com.example.witnessitproject.ui.theme.screens.record
 
 import android.content.Intent
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -11,17 +13,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,14 +35,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.witnessitproject.data.ReportViewModel
+import com.example.witnessitproject.ui.theme.navigation.ROUTE_EDIT_REPORT
 import com.google.firebase.auth.FirebaseAuth
 
-// ── FakeAlert KE Theme ───────────────────────────
-private val DarkBg  = Color(0xFF0A0F1E)
-private val CardBg  = Color(0xFF131D3B)
-private val Border  = Color(0xFF1E2D5A)
-private val Accent  = Color(0xFF993C1D)
-private val TextMuted = Color(0xFF7A8AB5)
+// ── Enhanced WitnessIt Tech Theme ───────────────────────────
+private val DarkBg      = Color(0xFF05070A)
+private val CardBg      = Color(0xFF0D1321)
+private val Border      = Color(0xFF1E2D5A)
+private val Accent      = Color(0xFFFF3D00) // Safety Orange
+private val NeonCyan    = Color(0xFF00E5FF) // Tech Blue
+private val TextMuted   = Color(0xFF94A3B8)
+private val TextDim     = Color(0xFF475569)
 
 @Composable
 fun RecordDetailScreen(
@@ -47,388 +56,257 @@ fun RecordDetailScreen(
     val context = LocalContext.current
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
-    // Fetch reports if list is empty
     LaunchedEffect(Unit) {
         if (viewModel.reports.isEmpty()) {
             viewModel.fetchReports(context)
         }
     }
 
-    // Find the specific report from the ViewModel list
     val report = viewModel.reports.find { it.reportId == reportId }
 
-    // Show loading state while report is being fetched
     if (report == null) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(DarkBg),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(color = Accent)
+        Box(modifier = Modifier.fillMaxSize().background(DarkBg), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = NeonCyan)
         }
         return
     }
 
-    // Delete confirmation dialog state
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    // Delete confirmation dialog
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete report?", color = Color.White) },
-            text = {
-                Text(
-                    "This report will be permanently removed. This cannot be undone.",
-                    color = TextMuted
-                )
-            },
+            title = { Text("WIPE DATA?", color = Color.White, fontWeight = FontWeight.Black) },
+            text = { Text("This record will be permanently purged from the secure database.", color = TextMuted) },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.deleteReport(report.reportId, context)
-                        showDeleteDialog = false
-                        navController.popBackStack()
-                    }
-                ) {
-                    Text("Delete", color = Accent, fontWeight = FontWeight.Bold)
-                }
+                TextButton(onClick = {
+                    viewModel.deleteReport(report.reportId, context)
+                    showDeleteDialog = false
+                    navController.popBackStack()
+                }) { Text("PURGE", color = Accent, fontWeight = FontWeight.Bold) }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancel", color = TextMuted)
-                }
+                TextButton(onClick = { showDeleteDialog = false }) { Text("CANCEL", color = TextMuted) }
             },
             containerColor = CardBg,
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(20.dp)
         )
     }
 
     Scaffold(
         containerColor = DarkBg,
         topBar = {
-            // Top bar with back button, share, and delete
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-                    .statusBarsPadding(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp).statusBarsPadding(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Back button
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = NeonCyan)
                 }
 
                 Text(
-                    text = "Report Detail",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
+                    text = "INCIDENT DOSSIER",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color.White,
+                        letterSpacing = 2.sp
+                    )
                 )
 
                 Row {
-                    // Share button — shares report as text via Android share sheet
-                    IconButton(
-                        onClick = {
-                            val shareText = buildString {
-                                append("⚠️ SCAM ALERT via FakeAlert KE\n\n")
-                                append("Type: ${report.scamType}\n")
-                                append("Target: ${report.target}\n")
-                                append("Details: ${report.description}\n")
-                                append("Flagged by: ${report.upvotes} people\n\n")
-                                append("Stay safe! Download FakeAlert KE to report scams.")
-                            }
-                            val intent = Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, shareText)
-                            }
-                            context.startActivity(
-                                Intent.createChooser(intent, "Share scam alert")
-                            )
+                    IconButton(onClick = {
+                        val shareText = "⚠️ SCAM ALERT: ${report.target}\nType: ${report.scamType}\nFlags: ${report.upvotes}\nStay safe with FakeAlert KE!"
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, shareText)
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = "Share",
-                            tint = Color.White
-                        )
+                        context.startActivity(Intent.createChooser(intent, "Transmit Intel"))
+                    }) {
+                        Icon(Icons.Default.Share, "Share", tint = Color.White)
                     }
 
-                    // Delete button — only visible to the report owner
                     if (currentUserId == report.reportedBy) {
-                        IconButton(onClick = { showDeleteDialog = true }) {
+                        IconButton(
+                            onClick = {
+                                navController.navigate("${ROUTE_EDIT_REPORT}/${report.reportId}")
+                            }
+                        ) {
                             Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete",
-                                tint = Accent
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit",
+                                tint = Color.White
                             )
+                        }
+                        IconButton(onClick = { showDeleteDialog = true }) {
+                            Icon(Icons.Default.Delete, "Delete", tint = Accent)
                         }
                     }
                 }
             }
         }
     ) { paddingValues ->
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Background Glow
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                drawCircle(
+                    brush = Brush.radialGradient(listOf(NeonCyan.copy(0.05f), Color.Transparent)),
+                    center = Offset(size.width * 0.1f, size.height * 0.1f),
+                    radius = 800f
+                )
+            }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-
-            // ── Scam type badge + verified status ────────
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Scam type badge
-                Surface(
-                    shape = RoundedCornerShape(20.dp),
-                    color = when (report.scamType) {
-                        "M-Pesa"  -> Color(0xFFFAEEDA)
-                        "Phone"   -> Color(0xFFFAECE7)
-                        "Website" -> Color(0xFFEEEDFE)
-                        "Email"   -> Color(0xFFE1F5EE)
-                        else      -> Color(0xFFF1EFE8)
-                    }
-                ) {
-                    Text(
-                        text = report.scamType,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = when (report.scamType) {
-                            "M-Pesa"  -> Color(0xFF854F0B)
-                            "Phone"   -> Color(0xFF712B13)
-                            "Website" -> Color(0xFF3C3489)
-                            "Email"   -> Color(0xFF0F6E56)
-                            else      -> Color(0xFF5F5E5A)
-                        },
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                    )
-                }
-
-                // Verified badge
-                if (report.verified) {
+                // ── Status Badges ────────
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = Color(0xFF0F6E56).copy(alpha = 0.15f)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(0xFF0F6E56))
-                            )
-                            Text(
-                                text = "Confirmed scam",
-                                fontSize = 11.sp,
-                                color = Color(0xFF0F6E56),
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                } else {
-                    Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = Color.Gray.copy(alpha = 0.15f)
+                        shape = RoundedCornerShape(8.dp),
+                        color = Accent.copy(0.1f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Accent.copy(0.5f))
                     ) {
                         Text(
-                            text = "Unverified",
-                            fontSize = 11.sp,
-                            color = Color.Gray,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                            report.scamType.uppercase(),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Accent,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                        )
+                    }
+
+                    val statusColor = if (report.verified) Color.Green else TextDim
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = statusColor.copy(0.1f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, statusColor.copy(0.5f))
+                    ) {
+                        Text(
+                            if (report.verified) "VERIFIED THREAT" else "PENDING ANALYSIS",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Black,
+                            color = statusColor,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                         )
                     }
                 }
-            }
 
-            // ── Target (phone/website) ───────────────────
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CardBg),
-                border = androidx.compose.foundation.BorderStroke(0.5.dp, Border)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "REPORTED TARGET",
-                        fontSize = 11.sp,
-                        color = TextMuted,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = report.target,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
-            }
-
-            // ── Description ──────────────────────────────
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CardBg),
-                border = androidx.compose.foundation.BorderStroke(0.5.dp, Border)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "WHAT HAPPENED",
-                        fontSize = 11.sp,
-                        color = TextMuted,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = report.description,
-                        fontSize = 14.sp,
-                        color = Color.White,
-                        lineHeight = 22.sp
-                    )
-                }
-            }
-
-            // ── Evidence screenshots ─────────────────────
-            if (report.evidenceUrls.isNotEmpty()) {
-                Column {
-                    Text(
-                        text = "EVIDENCE (${report.evidenceUrls.size} screenshot(s))",
-                        fontSize = 11.sp,
-                        color = TextMuted,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        items(report.evidenceUrls) { url ->
-                            AsyncImage(
-                                model = url,
-                                contentDescription = "Evidence screenshot",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(200.dp)
-                                    .clip(RoundedCornerShape(12.dp))
+                // ── Target Card ────────
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBg),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Border)
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text("IDENTIFIED TARGET", fontSize = 10.sp, color = NeonCyan, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = report.target,
+                            style = TextStyle(
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color.White,
+                                shadow = Shadow(color = NeonCyan.copy(0.3f), blurRadius = 10f)
                             )
-                        }
+                        )
                     }
                 }
-            }
 
-            // ── Upvote section ───────────────────────────
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CardBg),
-                border = androidx.compose.foundation.BorderStroke(0.5.dp, Border)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                // ── Description Card ────────
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBg.copy(0.6f)),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Border)
                 ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text("INTEL SUMMARY", fontSize = 10.sp, color = TextMuted, fontWeight = FontWeight.Black)
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(report.description, fontSize = 15.sp, color = Color.White, lineHeight = 24.sp)
+                    }
+                }
+
+                // ── Evidence Section ────────
+                if (report.evidenceUrls.isNotEmpty()) {
                     Column {
-                        Text(
-                            text = "${report.upvotes}",
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Accent
-                        )
-                        Text(
-                            text = "people flagged this as a scam",
-                            fontSize = 12.sp,
-                            color = TextMuted
-                        )
-                    }
-
-                    Button(
-                        onClick = { viewModel.upvoteReport(report.reportId, context) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Accent
-                        )
-                    ) {
-                        Text(
-                            text = "⚠️ Flag this",
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
+                        Text("ATTACHED EVIDENCE", fontSize = 10.sp, color = TextMuted, fontWeight = FontWeight.Black, modifier = Modifier.padding(bottom = 10.dp))
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            items(report.evidenceUrls) { url ->
+                                AsyncImage(
+                                    model = url,
+                                    contentDescription = "Evidence",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.size(220.dp).clip(RoundedCornerShape(20.dp)).border(1.dp, Border, RoundedCornerShape(20.dp))
+                                )
+                            }
+                        }
                     }
                 }
-            }
 
-            // ── Report metadata ──────────────────────────
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CardBg),
-                border = androidx.compose.foundation.BorderStroke(0.5.dp, Border)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                // ── Flag / Upvote Action ────────
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBg),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Border)
                 ) {
-                    Text(
-                        text = "REPORT INFO",
-                        fontSize = 11.sp,
-                        color = TextMuted,
-                        fontWeight = FontWeight.Medium
-                    )
-                    HorizontalDivider(color = Border)
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        modifier = Modifier.padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Date reported", fontSize = 13.sp, color = TextMuted)
-                        Text(
-                            text = report.timestamp?.toDate()?.let {
-                                java.text.SimpleDateFormat(
-                                    "dd MMM yyyy, HH:mm",
-                                    java.util.Locale.getDefault()
-                                ).format(it)
-                            } ?: "Unknown",
-                            fontSize = 13.sp,
-                            color = Color.White
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Scam type", fontSize = 13.sp, color = TextMuted)
-                        Text(report.scamType, fontSize = 13.sp, color = Color.White)
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Status", fontSize = 13.sp, color = TextMuted)
-                        Text(
-                            text = if (report.verified) "Confirmed" else "Unverified",
-                            fontSize = 13.sp,
-                            color = if (report.verified) Color(0xFF0F6E56) else Color.Gray
-                        )
+                        Column {
+                            Text(
+                                text = "${report.upvotes}",
+                                style = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Black, color = Accent, shadow = Shadow(Accent.copy(0.4f), blurRadius = 10f))
+                            )
+                            Text("COMMUNITY FLAGS", fontSize = 10.sp, color = TextMuted, fontWeight = FontWeight.Bold)
+                        }
+
+                        Button(
+                            onClick = { viewModel.upvoteReport(report.reportId, context) },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Accent)
+                        ) {
+                            Text("⚠️ FLAG TARGET", fontWeight = FontWeight.Black)
+                        }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                // ── Metadata Card ────────
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBg.copy(0.4f)),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Border)
+                ) {
+                    Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text("SYSTEM LOGS", fontSize = 10.sp, color = NeonCyan, fontWeight = FontWeight.Black)
+                        HorizontalDivider(color = Border)
+                        MetadataRow("LOGGED ON", report.timestamp?.toDate()?.let {
+                            java.text.SimpleDateFormat("dd MMM yyyy | HH:mm", java.util.Locale.getDefault()).format(it)
+                        } ?: "N/A")
+                        MetadataRow("THREAT LEVEL", if (report.verified) "CRITICAL" else "ELEVATED")
+                        MetadataRow("DATA SOURCE", "COMMUNITY FEED")
+                    }
+                }
+                Spacer(modifier = Modifier.height(40.dp))
+            }
         }
+    }
+}
+
+@Composable
+fun MetadataRow(label: String, value: String) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(label, fontSize = 11.sp, color = TextDim, fontWeight = FontWeight.Bold)
+        Text(value, fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Medium)
     }
 }
