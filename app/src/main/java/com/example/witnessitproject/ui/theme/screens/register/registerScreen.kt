@@ -57,6 +57,7 @@ fun RegisterScreen(navController: NavController) {
 
     val authViewModel: AuthViewModel = viewModel()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
@@ -221,7 +222,11 @@ fun RegisterScreen(navController: NavController) {
                     // ── Google Sign-In ──────────────────
                     OutlinedButton(
                         onClick = {
-                            // TODO: Google Sign-In Logic
+                            authViewModel.signInWithGoogle(
+                                context = context,
+                                navController = navController,
+                                scope = scope
+                            )
                         },
                         modifier = Modifier
                             .fillMaxWidth()

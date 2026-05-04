@@ -173,11 +173,11 @@ fun NewRecordScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(20.dp))
 
             // Description input
-            SectionLabel("INCIDENT LOG DETAILS")
+            SectionLabel("REPORT LOG DETAILS")
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                placeholder = { Text("Provide detailed intelligence regarding the suspicious activity...", color = TextDim) },
+                placeholder = { Text("Provide detailed information regarding the suspicious activity...", color = TextDim) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)

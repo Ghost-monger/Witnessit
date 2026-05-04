@@ -11,5 +11,6 @@ data class ReportModel(
     val upvotes: Int = 0,
     val reportedBy: String = "",
     val timestamp: Timestamp? = null,
-    val verified: Boolean = false
+    val verified: Boolean = false,
+    val status: String = "pending"
 )

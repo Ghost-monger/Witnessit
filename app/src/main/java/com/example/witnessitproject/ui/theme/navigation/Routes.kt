@@ -12,4 +12,8 @@ const val ROUTE_MY_REPORTS = "myreport"
 
 const val ROUTE_PROFILE = "profile"
 
+const val ROUTE_RECORD_DETAIL = "report_detail"
+
 const val ROUTE_EDIT_REPORT = "edit_report"
+
+const val ROUTE_ADMIN = "admin"

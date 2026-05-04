@@ -166,7 +166,7 @@ fun MyReportsScreen(navController: NavController) {
                                 )
                             )
                             Text(
-                                text = "Your intelligence log is empty. Scan and report suspicious activity to secure the network.",
+                                text = "Your intelligence log is empty. Search for reports and report suspicious activity to secure the network.",
                                 fontSize = 12.sp,
                                 color = TextMuted,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -178,7 +178,7 @@ fun MyReportsScreen(navController: NavController) {
                                 shape = RoundedCornerShape(8.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Accent)
                             ) {
-                                Text("INITIALIZE REPORT", fontWeight = FontWeight.Bold)
+                                Text("SUBMIT REPORT", fontWeight = FontWeight.Bold)
                             }
                         }
                     }

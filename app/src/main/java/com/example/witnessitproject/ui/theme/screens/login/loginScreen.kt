@@ -1,5 +1,6 @@
 package com.example.witnessitproject.ui.theme.screens.login
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.witnessitproject.R
 import com.example.witnessitproject.ui.theme.data.AuthViewModel
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_REGISTER
 
@@ -52,6 +55,7 @@ fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
@@ -92,7 +96,7 @@ fun LoginScreen(navController: NavController) {
 
             // App name with techy shadow
             Text(
-                text = "WITNESS IT KE",
+                text = "WITNESS IT ",
                 style = TextStyle(
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Black,
@@ -133,7 +137,7 @@ fun LoginScreen(navController: NavController) {
                     // Email field
                     Column {
                         Text(
-                            text = "OPERATOR ID",
+                            text = "Email",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = NeonCyan.copy(alpha = 0.8f),
@@ -164,7 +168,7 @@ fun LoginScreen(navController: NavController) {
                     // Password field
                     Column {
                         Text(
-                            text = "ACCESS KEY",
+                            text = "Password",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = NeonCyan.copy(alpha = 0.8f),
@@ -230,11 +234,49 @@ fun LoginScreen(navController: NavController) {
                         )
                     ) {
                         Text(
-                            text = "INITIALIZE SESSION",
+                            text = "Log In",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Black,
                             letterSpacing = 1.sp
                         )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        HorizontalDivider(modifier = Modifier.weight(1f), color = Color(0xFF1E2D5A))
+                        Text("  OR  ", color = Color(0xFF5A6A90), fontSize = 12.sp)
+                        HorizontalDivider(modifier = Modifier.weight(1f), color = Color(0xFF1E2D5A))
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedButton(
+                        onClick = {
+                            authViewModel.signInWithGoogle(
+                                context = context,
+                                navController = navController,
+                                scope = scope
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        border = BorderStroke(1.dp, Color(0xFF1E2D5A))
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painterResource(id = R.drawable.ic_google),
+                                contentDescription = "Google",
+                                tint = Color.Unspecified,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text("Continue with Google", color = Color.White)
+                        }
                     }
                 }
             }
@@ -244,12 +286,12 @@ fun LoginScreen(navController: NavController) {
             // Register link
             Row {
                 Text(
-                    text = "New operator? ",
+                    text = "Are you new here? ",
                     color = TextDim,
                     fontSize = 13.sp
                 )
                 Text(
-                    text = "Request Access",
+                    text = "Register Here",
                     color = NeonCyan,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
@@ -258,6 +300,7 @@ fun LoginScreen(navController: NavController) {
                     }
                 )
             }
+
         }
     }
 }

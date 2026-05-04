@@ -204,7 +204,7 @@ fun EditReportScreen(
 
             // ── Description field ─────────────────────
             Text(
-                "INCIDENT DETAILS",
+                "REPORT DETAILS",
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextMuted2,

@@ -70,7 +70,7 @@ fun ProfileScreen(navController: NavController) {
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text("TERMINATE SESSION?", color = Color.White, fontWeight = FontWeight.Black) },
+            title = { Text("LOG OUT?", color = Color.White, fontWeight = FontWeight.Black) },
             text = { Text("Are you sure you want to disconnect from the secure network?", color = TextMuted) },
             confirmButton = {
                 TextButton(
@@ -120,7 +120,7 @@ fun ProfileScreen(navController: NavController) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = NeonCyan)
                     }
                     Text(
-                        text = "OPERATOR PROFILE",
+                        text = "USER PROFILE",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.White,
@@ -182,7 +182,7 @@ fun ProfileScreen(navController: NavController) {
                             border = androidx.compose.foundation.BorderStroke(1.dp, Accent.copy(0.3f))
                         ) {
                             Text(
-                                text = "🛡 VERIFIED OPERATOR",
+                                text = "🛡 VERIFIED USER",
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Accent,
@@ -211,7 +211,7 @@ fun ProfileScreen(navController: NavController) {
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Text(
-                            text = "SYSTEM CREDENTIALS",
+                            text = "USER CREDENTIALS",
                             fontSize = 10.sp,
                             color = NeonCyan,
                             fontWeight = FontWeight.Black,
@@ -219,11 +219,11 @@ fun ProfileScreen(navController: NavController) {
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
 
-                        ProfileInfoRow(Icons.Default.Person, "CODENAME", username.ifBlank { "—" })
+                        ProfileInfoRow(Icons.Default.Person, "USERNAME", username.ifBlank { "—" })
                         HorizontalDivider(color = Border, modifier = Modifier.padding(vertical = 12.dp))
-                        ProfileInfoRow(Icons.Default.Email, "NETWORK ID", currentUser?.email ?: "—")
+                        ProfileInfoRow(Icons.Default.Email, "USER ID", currentUser?.email ?: "—")
                         HorizontalDivider(color = Border, modifier = Modifier.padding(vertical = 12.dp))
-                        ProfileInfoRow(Icons.Default.Phone, "COMMS LINE", phonenumber.ifBlank { "—" })
+                        ProfileInfoRow(Icons.Default.Phone, "PHONE NUMBER", phonenumber.ifBlank { "—" })
                     }
                 }
 
@@ -236,7 +236,7 @@ fun ProfileScreen(navController: NavController) {
                 ) {
                     Icon(Icons.AutoMirrored.Filled.ExitToApp, null, tint = Color.White, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text("DISCONNECT SESSION", fontWeight = FontWeight.Black, letterSpacing = 1.sp)
+                    Text("LOG OUT", fontWeight = FontWeight.Black, letterSpacing = 1.sp)
                 }
             }
         }

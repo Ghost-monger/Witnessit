@@ -13,7 +13,12 @@
           "package_name": "com.company.WitnessIt"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "205381490369-bb8iv3sgpfn47eish0ae3ape7gcid50s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAmD_1forvb9GIwpWp9UywgvrjwWXFPniY"
@@ -21,7 +26,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "205381490369-bb8iv3sgpfn47eish0ae3ape7gcid50s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
@@ -32,7 +42,20 @@
           "package_name": "com.example.witnessitproject"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "205381490369-uiiv2f8d25lmage2g51gt4dgbq3kfil6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.witnessitproject",
+            "certificate_hash": "d1dc22aab4ede0153bfa9579fad2440ba9e9f486"
+          }
+        },
+        {
+          "client_id": "205381490369-bb8iv3sgpfn47eish0ae3ape7gcid50s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAmD_1forvb9GIwpWp9UywgvrjwWXFPniY"
@@ -40,7 +63,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "205381490369-bb8iv3sgpfn47eish0ae3ape7gcid50s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

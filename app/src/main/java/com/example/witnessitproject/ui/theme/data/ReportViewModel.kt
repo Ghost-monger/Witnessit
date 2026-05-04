@@ -34,6 +34,9 @@ class ReportViewModel : ViewModel() {
 
     private val _reports = mutableStateListOf<ReportModel>()
     val reports: List<ReportModel> = _reports
+    private val _pendingReports = mutableStateListOf<ReportModel>()
+
+    val pendingReports: List<ReportModel> = _pendingReports
 
     private val _myReports = mutableStateListOf<ReportModel>()
     val myReports: List<ReportModel> = _myReports
@@ -73,7 +76,8 @@ class ReportViewModel : ViewModel() {
                     "upvotes" to 0,
                     "reportedBy" to userId,
                     "timestamp" to Timestamp.now(),
-                    "verified" to false
+                    "verified" to false,
+                    "status" to "pending"
                 )
 
                 // Save to Firestore using callbacks — no await needed
@@ -112,6 +116,7 @@ class ReportViewModel : ViewModel() {
     // Fetch all reports for home feed
     fun fetchReports(context: Context) {
         firestore.collection("reports")
+            .whereEqualTo("status", "approved") // ✅ only approved reports
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { snapshot ->
@@ -131,12 +136,23 @@ class ReportViewModel : ViewModel() {
 
     // Fetch only current user's reports
     fun fetchMyReports(context: Context) {
-        val userId = auth.currentUser?.uid ?: return
+        val userId = auth.currentUser?.uid
+
+        // Temporary debug — shows what userId is being used
+        Toast.makeText(context, "Fetching reports for: $userId", Toast.LENGTH_LONG).show()
+
+        if (userId == null) {
+            Toast.makeText(context, "ERROR: userId is null", Toast.LENGTH_LONG).show()
+            return
+        }
+
         firestore.collection("reports")
             .whereEqualTo("reportedBy", userId)
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { snapshot ->
+                // Temporary debug — shows how many docs were found
+                Toast.makeText(context, "Found ${snapshot.documents.size} reports", Toast.LENGTH_LONG).show()
                 _myReports.clear()
                 for (doc in snapshot.documents) {
                     val report = doc.toObject(ReportModel::class.java)
@@ -146,8 +162,13 @@ class ReportViewModel : ViewModel() {
                     }
                 }
             }
-            .addOnFailureListener {
-                Toast.makeText(context, "Failed to load your reports", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener { e ->
+                Toast.makeText(
+                    context,
+                    "Failed: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+                android.util.Log.e("MyReports", "Error: ${e.message}", e)
             }
     }
 
@@ -305,5 +326,58 @@ class ReportViewModel : ViewModel() {
                 }
             }
         }
+    }
+    // Fetch all pending reports — for admin dashboard
+    fun fetchPendingReports(context: Context) {
+        firestore.collection("reports")
+            .whereEqualTo("status", "pending")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                _pendingReports.clear()
+                for (doc in snapshot.documents) {
+                    val report = doc.toObject(ReportModel::class.java)
+                    report?.let {
+                        it.reportId = doc.id
+                        _pendingReports.add(it)
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    // Approve a report — makes it visible on home feed
+    fun approveReport(reportId: String, context: Context) {
+        firestore.collection("reports")
+            .document(reportId)
+            .update(
+                mapOf(
+                    "status" to "approved",
+                    "verified" to true
+                )
+            )
+            .addOnSuccessListener {
+                _pendingReports.removeIf { it.reportId == reportId }
+                Toast.makeText(context, "Report approved ✅", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(context, "Failed to approve", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    // Reject a report — deletes it entirely
+    fun rejectReport(reportId: String, context: Context) {
+        firestore.collection("reports")
+            .document(reportId)
+            .delete()
+            .addOnSuccessListener {
+                _pendingReports.removeIf { it.reportId == reportId }
+                Toast.makeText(context, "Report rejected ❌", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(context, "Failed to reject", Toast.LENGTH_SHORT).show()
+            }
     }
 }

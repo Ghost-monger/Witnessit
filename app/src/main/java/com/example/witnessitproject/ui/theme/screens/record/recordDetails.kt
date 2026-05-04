@@ -77,7 +77,7 @@ fun RecordDetailScreen(
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text("WIPE DATA?", color = Color.White, fontWeight = FontWeight.Black) },
-            text = { Text("This record will be permanently purged from the secure database.", color = TextMuted) },
+            text = { Text("This record will be permanently deleted from the secure database.", color = TextMuted) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deleteReport(report.reportId, context)
@@ -122,7 +122,7 @@ fun RecordDetailScreen(
                             type = "text/plain"
                             putExtra(Intent.EXTRA_TEXT, shareText)
                         }
-                        context.startActivity(Intent.createChooser(intent, "Transmit Intel"))
+                        context.startActivity(Intent.createChooser(intent, "Share via"))
                     }) {
                         Icon(Icons.Default.Share, "Share", tint = Color.White)
                     }

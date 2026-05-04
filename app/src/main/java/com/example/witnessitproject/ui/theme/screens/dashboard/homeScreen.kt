@@ -76,7 +76,7 @@ fun HomeScreen(navController: NavController) {
                     Icon(Icons.Default.Add, "New", tint = Color.White, modifier = Modifier.size(28.dp))
                 }
             },
-            bottomBar = { BottomNavBar(navController) }
+
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -107,7 +107,7 @@ fun HomeScreen(navController: NavController) {
                         }
                         DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }, modifier = Modifier.background(Surface)) {
                             DropdownMenuItem(
-                                text = { Text("LOGOUT SESSION", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold) },
+                                text = { Text("LOGOUT", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold) },
                                 onClick = {
                                     FirebaseAuth.getInstance().signOut()
                                     navController.navigate(ROUTE_LOGIN) { popUpTo(0) { inclusive = true } }
@@ -130,7 +130,7 @@ fun HomeScreen(navController: NavController) {
                     Row(modifier = Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Search, null, tint = NeonCyan, modifier = Modifier.size(20.dp))
                         Spacer(Modifier.width(12.dp))
-                        Text("SCAN FOR THREATS...", color = TextMuted, fontSize = 14.sp)
+                        Text("SEARCH FOR THREATS...", color = TextMuted, fontSize = 14.sp)
                     }
                 }
 
@@ -266,8 +266,8 @@ fun BottomNavBar(navController: NavController) {
     NavigationBar(containerColor = Surface, tonalElevation = 0.dp) {
         val items = listOf(
             Triple("Home", Icons.Default.Home, "dashboard"),
-            Triple("Scan", Icons.Default.Search, ROUTE_SEARCH),
-            Triple("Logs", Icons.Default.List, ROUTE_MY_REPORTS),
+            Triple("Search", Icons.Default.Search, ROUTE_SEARCH),
+            Triple("My Reports", Icons.Default.List, ROUTE_MY_REPORTS),
             Triple("Profile", Icons.Default.Person, "profile")
         )
         items.forEach { (label, icon, route) ->
