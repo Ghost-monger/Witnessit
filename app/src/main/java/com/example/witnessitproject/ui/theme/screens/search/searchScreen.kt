@@ -2,10 +2,12 @@ package com.example.witnessitproject.ui.theme.screens.search
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -26,16 +28,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.witnessitproject.data.ReportViewModel
+import com.example.witnessitproject.ui.theme.navigation.ROUTE_NEW_REPORT
 import com.example.witnessitproject.ui.theme.screens.dashboard.ReportCard
 
-// ── Enhanced WitnessIt Tech Theme ───────────────────────────
-private val DarkBg      = Color(0xFF05070A)
-private val CardBg      = Color(0xFF0D1321)
-private val Border      = Color(0xFF1E2D5A)
-private val Accent      = Color(0xFFFF3D00) // Safety Orange
-private val NeonCyan    = Color(0xFF00E5FF) // Tech Blue
-private val TextMuted   = Color(0xFF94A3B8)
-private val TextDim     = Color(0xFF475569)
+// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+private val DeepSpace    = Color(0xFF020617)
+private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
+private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
+
+private val ElectricBlue = Color(0xFF6366F1) // Primary Action/Trust
+private val NeonEmerald  = Color(0xFF10B981) // Safety/Verified
+private val AlertCoral   = Color(0xFFFB7185) // Threat/Danger
+
+private val TextPrimary  = Color(0xFFF8FAFC)
+private val TextMuted    = Color(0xFF94A3B8)
+private val TextDim      = Color(0xFF64748B)
 
 @Composable
 fun SearchScreen(navController: NavController) {
@@ -65,14 +72,16 @@ fun SearchScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBg)
+            .background(DeepSpace)
     ) {
-        // --- Background Tech Glow ---
+        // --- VISUAL LAYER: Background Scan Glow ---
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
-                brush = Brush.radialGradient(listOf(NeonCyan.copy(0.05f), Color.Transparent)),
-                center = Offset(size.width * 0.5f, size.height * 0.5f),
-                radius = 1000f
+                brush = Brush.radialGradient(
+                    colors = listOf(ElectricBlue.copy(alpha = 0.05f), Color.Transparent)
+                ),
+                center = Offset(size.width * 0.5f, size.height * 0.3f),
+                radius = 1200f
             )
         }
 
@@ -87,30 +96,33 @@ fun SearchScreen(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = NeonCyan)
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.background(CardGlass, CircleShape).border(1.dp, BorderGlass, CircleShape)
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = ElectricBlue)
                 }
 
                 OutlinedTextField(
                     value = query,
                     onValueChange = { query = it },
                     placeholder = {
-                        Text("SCAN DATABASE...", color = TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("INTEL SCANNER...", color = TextDim, fontSize = 12.sp, fontWeight = FontWeight.Black)
                     },
                     leadingIcon = {
-                        Icon(Icons.Default.Search, null, tint = Accent)
+                        Icon(Icons.Default.Search, null, tint = ElectricBlue)
                     },
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(18.dp),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = NeonCyan,
-                        unfocusedBorderColor = Border,
+                        focusedBorderColor = ElectricBlue,
+                        unfocusedBorderColor = BorderGlass,
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White,
-                        focusedContainerColor = CardBg,
-                        unfocusedContainerColor = CardBg,
-                        cursorColor = Accent
+                        focusedContainerColor = CardGlass,
+                        unfocusedContainerColor = CardGlass,
+                        cursorColor = ElectricBlue
                     )
                 )
             }
@@ -128,25 +140,24 @@ fun SearchScreen(navController: NavController) {
                         onClick = { selectedFilter = filter },
                         label = {
                             Text(
-                                text = filter,
-                                fontSize = 11.sp,
+                                text = filter.uppercase(),
+                                fontSize = 10.sp,
                                 fontWeight = FontWeight.Black
                             )
                         },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = FilterChipDefaults.filterChipColors(
-                            containerColor = CardBg,
+                            containerColor = CardGlass,
                             labelColor = TextMuted,
-                            selectedContainerColor = Accent,
+                            selectedContainerColor = ElectricBlue,
                             selectedLabelColor = Color.White
                         ),
                         border = FilterChipDefaults.filterChipBorder(
                             enabled = true,
                             selected = isSelected,
-                            borderColor = Border,
-                            selectedBorderColor = Accent,
-                            borderWidth = 1.dp,
-                            selectedBorderWidth = 1.dp
+                            borderColor = BorderGlass,
+                            selectedBorderColor = ElectricBlue,
+                            borderWidth = 1.dp
                         )
                     )
                 }
@@ -155,19 +166,22 @@ fun SearchScreen(navController: NavController) {
             // ── Results Counter ─────────────────────────────
             if (query.isNotBlank() || selectedFilter != "All") {
                 Text(
-                    text = "${searchResults.size} MATCHES FOUND IN CLOUD DATABASE",
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = NeonCyan,
-                    letterSpacing = 1.sp,
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+                    text = "${searchResults.size} MATCHES IN LOCAL REGISTRY",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Black,
+                    color = ElectricBlue,
+                    letterSpacing = 1.5.sp,
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
                 )
             }
 
-            // ── Search Logic States ────────────────────
+            // ── Search States ────────────────────
             when {
                 query.isBlank() && selectedFilter == "All" -> {
-                    SearchPrompt(text = "SEARCH BEFORE YOU TRUST", subtext = "Initialize scanner by typing a number or URL.")
+                    SearchPrompt(
+                        text = "SEARCH BEFORE YOU TRUST",
+                        subtext = "Input a phone number, URL, or name to verify safety."
+                    )
                 }
 
                 searchResults.isEmpty() -> {
@@ -177,8 +191,8 @@ fun SearchScreen(navController: NavController) {
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        contentPadding = PaddingValues(bottom = 24.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(top = 8.dp, bottom = 40.dp)
                     ) {
                         items(searchResults) { report ->
                             ReportCard(
@@ -199,15 +213,24 @@ fun SearchScreen(navController: NavController) {
 fun SearchPrompt(text: String, subtext: String) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
-            Text("🛡️", fontSize = 60.sp)
+            Text("🛡️", fontSize = 64.sp)
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = text,
-                style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Black, color = Color.White, letterSpacing = 2.sp)
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color.White,
+                    letterSpacing = 1.sp,
+                    shadow = Shadow(color = ElectricBlue.copy(0.4f), blurRadius = 15f)
+                )
             )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = subtext,
-                fontSize = 12.sp, color = TextMuted, textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                fontSize = 13.sp,
+                color = TextMuted,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
         }
     }
@@ -217,23 +240,32 @@ fun SearchPrompt(text: String, subtext: String) {
 fun EmptyState(query: String, navController: NavController) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
-            Text("✅", fontSize = 60.sp)
+            Text("✅", fontSize = 64.sp)
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "NO THREATS DETECTED",
-                style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Black, color = Color.Green, letterSpacing = 1.sp)
+                text = "NO THREATS LOGGED",
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Black,
+                    color = NeonEmerald,
+                    letterSpacing = 1.sp
+                )
             )
             Text(
-                text = "\"$query\" is not currently flagged. Proceed with caution and report if suspicious activity occurs.",
-                fontSize = 12.sp, color = TextMuted, textAlign = androidx.compose.ui.text.style.TextAlign.Center, modifier = Modifier.padding(top = 8.dp)
+                text = "\"$query\" is not currently flagged. Proceed with extreme caution.",
+                fontSize = 13.sp,
+                color = TextMuted,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                modifier = Modifier.padding(top = 12.dp)
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             Button(
-                onClick = { navController.navigate("new_report") },
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Accent)
+                onClick = { navController.navigate(ROUTE_NEW_REPORT) },
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = AlertCoral),
+                modifier = Modifier.height(50.dp).fillMaxWidth(0.8f)
             ) {
-                Text("REPORT AS NEW THREAT", fontWeight = FontWeight.Bold)
+                Text("REPORT AS SUSPICIOUS", fontWeight = FontWeight.Black, letterSpacing = 1.sp)
             }
         }
     }

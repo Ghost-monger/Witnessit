@@ -38,12 +38,13 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.witnessitproject.data.ReportViewModel
 
-// ── Enhanced WitnessIt Tech Theme ───────────────────────────
-private val DarkBg      = Color(0xFF05070A)
-private val CardBg      = Color(0xFF0D1321)
-private val Border      = Color(0xFF1E2D5A)
-private val Accent      = Color(0xFFFF3D00) // Safety Orange
-private val NeonCyan    = Color(0xFF00E5FF) // Tech Blue
+// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+private val DeepSpace    = Color(0xFF020617)
+private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
+private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
+
+private val ElectricBlue = Color(0xFF6366F1) // Primary Action
+private val AlertCoral   = Color(0xFFFB7185) // Submit/Action
 private val TextMuted   = Color(0xFF94A3B8)
 private val TextDim     = Color(0xFF475569)
 
@@ -70,13 +71,13 @@ fun NewRecordScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBg)
+            .background(DeepSpace)
     ) {
-        // --- Background Tech Glow ---
+        // --- VISUAL LAYER: Background Tech Glow ---
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(NeonCyan.copy(alpha = 0.05f), Color.Transparent),
+                    colors = listOf(ElectricBlue.copy(alpha = 0.05f), Color.Transparent),
                     center = Offset(size.width * 0.5f, size.height * 0.9f),
                     radius = 900f
                 )
@@ -92,29 +93,29 @@ fun NewRecordScreen(navController: NavController) {
         ) {
             // Header
             Text(
-                text = "FILE INCIDENT REPORT",
+                text = "SUBMIT INTEL",
                 style = TextStyle(
-                    fontSize = 22.sp,
+                    fontSize = 26.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.White,
                     letterSpacing = 1.5.sp,
-                    shadow = Shadow(color = Accent.copy(0.4f), blurRadius = 10f)
+                    shadow = Shadow(color = AlertCoral.copy(0.4f), blurRadius = 15f)
                 )
             )
             Text(
-                text = "SYSTEM ENCRYPTION: ACTIVE",
+                text = "ENCRYPTED CHANNEL 02 // SECURE",
                 fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                color = NeonCyan,
-                letterSpacing = 1.sp
+                fontWeight = FontWeight.Black,
+                color = ElectricBlue,
+                letterSpacing = 2.sp
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-            // Scam type selection
-            SectionLabel("SELECT INCIDENT CATEGORY")
+            // Incident category selection
+            SectionLabel("INCIDENT CATEGORY")
             LazyRow(
-                modifier = Modifier.padding(vertical = 8.dp),
+                modifier = Modifier.padding(vertical = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(scamTypes) { type ->
@@ -125,25 +126,24 @@ fun NewRecordScreen(navController: NavController) {
                         onClick = { scamType = type },
                         label = {
                             Text(
-                                text = type,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
+                                text = type.uppercase(),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Black
                             )
                         },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = FilterChipDefaults.filterChipColors(
-                            containerColor = CardBg,
+                            containerColor = CardGlass,
                             labelColor = TextMuted,
-                            selectedContainerColor = Accent,
+                            selectedContainerColor = ElectricBlue,
                             selectedLabelColor = Color.White
                         ),
                         border = FilterChipDefaults.filterChipBorder(
                             enabled = true,
                             selected = isSelected,
-                            borderColor = Border,
-                            selectedBorderColor = Accent,
-                            borderWidth = 1.dp,
-                            selectedBorderWidth = 1.dp
+                            borderColor = BorderGlass,
+                            selectedBorderColor = ElectricBlue,
+                            borderWidth = 1.dp
                         )
                     )
                 }
@@ -152,51 +152,52 @@ fun NewRecordScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Target input
-            SectionLabel("IDENTIFIED TARGET (PHONE / URL)")
+            SectionLabel("TARGET IDENTIFIER (PHONE / URL)")
             OutlinedTextField(
                 value = target,
                 onValueChange = { target = it },
-                placeholder = { Text("e.g. 0712XXXXXX", color = TextDim) },
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                shape = RoundedCornerShape(12.dp),
+                placeholder = { Text("e.g. 0712XXXXXX", color = TextDim, fontSize = 14.sp) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                shape = RoundedCornerShape(16.dp),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = NeonCyan,
-                    unfocusedBorderColor = Border,
+                    focusedBorderColor = ElectricBlue,
+                    unfocusedBorderColor = BorderGlass,
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    focusedContainerColor = CardBg,
-                    unfocusedContainerColor = CardBg
+                    focusedContainerColor = CardGlass,
+                    unfocusedContainerColor = CardGlass
                 )
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Description input
-            SectionLabel("REPORT LOG DETAILS")
+            SectionLabel("INCIDENT DESCRIPTION")
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                placeholder = { Text("Provide detailed information regarding the suspicious activity...", color = TextDim) },
+                placeholder = { Text("Provide specific details of the threat...", color = TextDim, fontSize = 14.sp) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp)
+                    .height(160.dp)
                     .padding(top = 8.dp),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = NeonCyan,
-                    unfocusedBorderColor = Border,
+                    focusedBorderColor = ElectricBlue,
+                    unfocusedBorderColor = BorderGlass,
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    focusedContainerColor = CardBg,
-                    unfocusedContainerColor = CardBg
+                    focusedContainerColor = CardGlass,
+                    unfocusedContainerColor = CardGlass
                 )
-
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Image picker section
+            // Evidence attachments
             SectionLabel("EVIDENCE ATTACHMENTS (${selectedImages.size}/5)")
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -205,15 +206,15 @@ fun NewRecordScreen(navController: NavController) {
                     Box(
                         modifier = Modifier
                             .size(100.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(CardBg)
-                            .border(BorderStroke(1.dp, if(selectedImages.size < 5) NeonCyan.copy(0.5f) else Border), RoundedCornerShape(16.dp))
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(CardGlass)
+                            .border(BorderStroke(1.dp, if(selectedImages.size < 5) ElectricBlue.copy(0.4f) else BorderGlass), RoundedCornerShape(20.dp))
                             .clickable { if (selectedImages.size < 5) galleryLauncher.launch("image/*") },
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(Icons.Default.Add, "Add", tint = if(selectedImages.size < 5) NeonCyan else TextDim)
-                            Text("UPLOAD", fontSize = 10.sp, fontWeight = FontWeight.Black, color = if(selectedImages.size < 5) NeonCyan else TextDim)
+                            Icon(Icons.Default.Add, "Add", tint = if(selectedImages.size < 5) ElectricBlue else TextDim)
+                            Text("ADD", fontSize = 10.sp, fontWeight = FontWeight.Black, color = if(selectedImages.size < 5) ElectricBlue else TextDim)
                         }
                     }
                 }
@@ -224,10 +225,17 @@ fun NewRecordScreen(navController: NavController) {
                             model = uri,
                             contentDescription = "Evidence",
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp)).border(1.dp, Border, RoundedCornerShape(16.dp))
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(20.dp))
+                                .border(1.dp, BorderGlass, RoundedCornerShape(20.dp))
                         )
                         Surface(
-                            modifier = Modifier.align(Alignment.TopEnd).padding(4.dp).size(24.dp).clickable { selectedImages = selectedImages.filter { it != uri } },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(6.dp)
+                                .size(24.dp)
+                                .clickable { selectedImages = selectedImages.filter { it != uri } },
                             shape = CircleShape,
                             color = Color.Black.copy(alpha = 0.7f)
                         ) {
@@ -237,7 +245,7 @@ fun NewRecordScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             // Submit button
             Button(
@@ -246,23 +254,25 @@ fun NewRecordScreen(navController: NavController) {
                         viewModel.submitReport(selectedImages, scamType, target, description, context, navController)
                     }
                 },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp),
                 enabled = target.isNotBlank() && description.isNotBlank(),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Accent,
-                    disabledContainerColor = CardBg
+                    containerColor = AlertCoral,
+                    disabledContainerColor = Color.White.copy(alpha = 0.05f)
                 )
             ) {
                 Text(
-                    "TRANSMIT REPORT",
+                    "TRANSMIT INTEL",
                     fontWeight = FontWeight.Black,
-                    letterSpacing = 1.sp,
+                    letterSpacing = 1.5.sp,
                     color = if (target.isNotBlank() && description.isNotBlank()) Color.White else TextDim
                 )
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(50.dp))
         }
     }
 }
@@ -271,9 +281,9 @@ fun NewRecordScreen(navController: NavController) {
 fun SectionLabel(text: String) {
     Text(
         text = text,
-        fontSize = 10.sp,
-        fontWeight = FontWeight.Bold,
+        fontSize = 11.sp,
+        fontWeight = FontWeight.Black,
         color = TextMuted,
-        letterSpacing = 1.sp
+        letterSpacing = 1.2.sp
     )
 }

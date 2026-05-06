@@ -34,15 +34,17 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.witnessitproject.data.ReportViewModel
 
-// ── FakeAlert KE Theme ───────────────────────────
-private val DarkBg2   = Color(0xFF0A0F1E)
-private val CardBg2   = Color(0xFF131D3B)
-private val Border2   = Color(0xFF1E2D5A)
-private val Accent2   = Color(0xFF993C1D)
-private val NeonCyan2 = Color(0xFF00E5FF)
-private val TextMuted2 = Color(0xFF7A8AB5)
-private val TextDim2  = Color(0xFF5A6A90)
+// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+private val DeepSpace    = Color(0xFF020617)
+private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
+private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
+private val ElectricBlue = Color(0xFF6366F1) // Primary Action
+private val AlertCoral   = Color(0xFFFB7185) // Update Action
+private val TextMuted   = Color(0xFF94A3B8)
+private val TextDim     = Color(0xFF475569)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditReportScreen(
     navController: NavController,
@@ -51,38 +53,25 @@ fun EditReportScreen(
     val viewModel: ReportViewModel = viewModel()
     val context = LocalContext.current
 
-    // Fetch reports if empty
     LaunchedEffect(Unit) {
         if (viewModel.reports.isEmpty()) {
             viewModel.fetchReports(context)
         }
     }
 
-    // Find the report to edit
     val report = viewModel.reports.find { it.reportId == reportId }
 
-    // Show loading while fetching
     if (report == null) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(DarkBg2),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(color = Accent2)
+        Box(modifier = Modifier.fillMaxSize().background(DeepSpace), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = ElectricBlue)
         }
         return
     }
 
-    // Pre-fill form with existing report data
     var scamType by remember { mutableStateOf(report.scamType) }
     var target by remember { mutableStateOf(report.target) }
     var description by remember { mutableStateOf(report.description) }
-
-    // Existing Cloudinary URLs — kept unless user removes them
     var existingUrls by remember { mutableStateOf(report.evidenceUrls) }
-
-    // New images picked from gallery
     var newImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
 
     val scamTypes = listOf("M-Pesa", "Phone", "Website", "Email", "Other")
@@ -96,33 +85,39 @@ fun EditReportScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBg2)
-    ) {
+    Column(modifier = Modifier.fillMaxSize().background(DeepSpace)) {
 
-        // ── Top bar ──────────────────────────────────
+        // ── Top Bar ──────────────────────────────────
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .statusBarsPadding()
-                .padding(horizontal = 8.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(horizontal = 12.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
-                }
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier.background(CardGlass, CircleShape).border(1.dp, BorderGlass, CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = ElectricBlue
+                )
+            }
+            Spacer(Modifier.width(16.dp))
+            Column {
+                Text(
+                    text = "REVISE LOG",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Black,
+                    color = ElectricBlue,
+                    letterSpacing = 2.sp
+                )
                 Text(
                     text = "Edit Report",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Black,
                     color = Color.White
                 )
             }
@@ -132,267 +127,159 @@ fun EditReportScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
 
-            // ── Scam type chips ───────────────────────
-            Text(
-                "INCIDENT CATEGORY",
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextMuted2,
-                letterSpacing = 1.sp
-            )
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(scamTypes) { type ->
-                    val isSelected = scamType == type
-                    FilterChip(
-                        selected = isSelected,
-                        enabled = true,
-                        onClick = { scamType = type },
-                        label = {
-                            Text(
-                                type,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = CardBg2,
-                            labelColor = TextMuted2,
-                            selectedContainerColor = Accent2,
-                            selectedLabelColor = Color.White
-                        ),
-                        border = FilterChipDefaults.filterChipBorder(
-                            enabled = true,
+            // ── Category ───────────────────────
+            Column {
+                SectionLabel("INCIDENT CATEGORY")
+                LazyRow(
+                    modifier = Modifier.padding(top = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    items(scamTypes) { type ->
+                        val isSelected = scamType == type
+                        FilterChip(
                             selected = isSelected,
-                            borderColor = Border2,
-                            selectedBorderColor = Accent2,
-                            borderWidth = 1.dp,
-                            selectedBorderWidth = 1.dp
+                            onClick = { scamType = type },
+                            label = { Text(type.uppercase(), fontSize = 11.sp, fontWeight = FontWeight.Black) },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = FilterChipDefaults.filterChipColors(
+                                containerColor = CardGlass,
+                                labelColor = TextMuted,
+                                selectedContainerColor = ElectricBlue,
+                                selectedLabelColor = Color.White
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = isSelected,
+                                borderColor = BorderGlass,
+                                selectedBorderColor = ElectricBlue,
+                                borderWidth = 1.dp
+                            )
                         )
-                    )
+                    }
                 }
             }
 
-            // ── Target field ──────────────────────────
-            Text(
-                "TARGET (PHONE / URL)",
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextMuted2,
-                letterSpacing = 1.sp
-            )
-            OutlinedTextField(
-                value = target,
-                onValueChange = { target = it },
-                placeholder = { Text("e.g. 0712XXXXXX", color = TextDim2) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = NeonCyan2,
-                    unfocusedBorderColor = Border2,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedContainerColor = CardBg2,
-                    unfocusedContainerColor = CardBg2
-                )
-            )
-
-            // ── Description field ─────────────────────
-            Text(
-                "REPORT DETAILS",
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextMuted2,
-                letterSpacing = 1.sp
-            )
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                placeholder = {
-                    Text(
-                        "Describe what happened...",
-                        color = TextDim2
+            // ── Target ──────────────────────────
+            Column {
+                SectionLabel("TARGET IDENTIFIER")
+                OutlinedTextField(
+                    value = target,
+                    onValueChange = { target = it },
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ElectricBlue,
+                        unfocusedBorderColor = BorderGlass,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = CardGlass,
+                        unfocusedContainerColor = CardGlass
                     )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = NeonCyan2,
-                    unfocusedBorderColor = Border2,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedContainerColor = CardBg2,
-                    unfocusedContainerColor = CardBg2
                 )
-            )
+            }
 
-            // ── Evidence section ──────────────────────
+            // ── Description ─────────────────────
+            Column {
+                SectionLabel("INTEL DETAILS")
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    modifier = Modifier.fillMaxWidth().height(150.dp).padding(top = 8.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ElectricBlue,
+                        unfocusedBorderColor = BorderGlass,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = CardGlass,
+                        unfocusedContainerColor = CardGlass
+                    )
+                )
+            }
+
+            // ── Evidence ──────────────────────
             val totalImages = existingUrls.size + newImages.size
-            Text(
-                "EVIDENCE ($totalImages/5)",
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextMuted2,
-                letterSpacing = 1.sp
-            )
-
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                // Add button
-                item {
-                    Box(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(CardBg2)
-                            .border(
-                                BorderStroke(
-                                    1.dp,
-                                    if (totalImages < 5) NeonCyan2.copy(0.5f) else Border2
-                                ),
-                                RoundedCornerShape(12.dp)
-                            )
-                            .clickable {
-                                if (totalImages < 5) galleryLauncher.launch("image/*")
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = "Add",
-                                tint = if (totalImages < 5) NeonCyan2 else TextDim2
-                            )
-                            Text(
-                                "ADD",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Black,
-                                color = if (totalImages < 5) NeonCyan2 else TextDim2
-                            )
+            Column {
+                SectionLabel("EVIDENCE ATTACHMENTS ($totalImages/5)")
+                LazyRow(
+                    modifier = Modifier.padding(top = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(CardGlass)
+                                .border(BorderStroke(1.dp, if (totalImages < 5) ElectricBlue.copy(0.4f) else BorderGlass), RoundedCornerShape(20.dp))
+                                .clickable { if (totalImages < 5) galleryLauncher.launch("image/*") },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Default.Add, "Add", tint = if (totalImages < 5) ElectricBlue else TextDim)
                         }
                     }
-                }
 
-                // Existing Cloudinary images — removable
-                items(existingUrls) { url ->
-                    Box(modifier = Modifier.size(100.dp)) {
-                        AsyncImage(
-                            model = url,
-                            contentDescription = "Existing evidence",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(RoundedCornerShape(12.dp))
-                                .border(1.dp, Border2, RoundedCornerShape(12.dp))
-                        )
-                        // Remove existing image
-                        Surface(
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(4.dp)
-                                .size(24.dp)
-                                .clickable {
-                                    existingUrls = existingUrls.filter { it != url }
-                                },
-                            shape = CircleShape,
-                            color = Color.Black.copy(alpha = 0.7f)
-                        ) {
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = "Remove",
-                                tint = Color.White,
-                                modifier = Modifier.padding(4.dp)
-                            )
+                    // Existing
+                    items(existingUrls) { url ->
+                        EvidenceBox(model = url, isNew = false) {
+                            existingUrls = existingUrls.filter { it != url }
                         }
                     }
-                }
 
-                // New images picked from gallery
-                items(newImages) { uri ->
-                    Box(modifier = Modifier.size(100.dp)) {
-                        AsyncImage(
-                            model = uri,
-                            contentDescription = "New evidence",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(RoundedCornerShape(12.dp))
-                                .border(1.dp, NeonCyan2.copy(0.3f), RoundedCornerShape(12.dp))
-                        )
-                        // Remove new image
-                        Surface(
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(4.dp)
-                                .size(24.dp)
-                                .clickable {
-                                    newImages = newImages.filter { it != uri }
-                                },
-                            shape = CircleShape,
-                            color = Color.Black.copy(alpha = 0.7f)
-                        ) {
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = "Remove",
-                                tint = Color.White,
-                                modifier = Modifier.padding(4.dp)
-                            )
+                    // New
+                    items(newImages) { uri ->
+                        EvidenceBox(model = uri, isNew = true) {
+                            newImages = newImages.filter { it != uri }
                         }
                     }
                 }
             }
-
-            // Cyan border = new image, dark border = existing image
-            Text(
-                text = "Cyan border = newly added  |  Dark border = existing",
-                fontSize = 10.sp,
-                color = TextDim2
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             // ── Save button ───────────────────────────
             Button(
                 onClick = {
                     if (target.isNotBlank() && description.isNotBlank()) {
-                        viewModel.updateReport(
-                            reportId = reportId,
-                            scamType = scamType,
-                            target = target,
-                            description = description,
-                            imageUris = newImages,
-                            existingUrls = existingUrls,
-                            context = context,
-                            navController = navController
-                        )
+                        viewModel.updateReport(reportId, scamType, target, description, newImages, existingUrls, context, navController)
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
+                modifier = Modifier.fillMaxWidth().height(60.dp),
                 enabled = target.isNotBlank() && description.isNotBlank(),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Accent2,
-                    disabledContainerColor = CardBg2
+                    containerColor = AlertCoral,
+                    disabledContainerColor = Color.White.copy(alpha = 0.05f)
                 )
             ) {
-                Text(
-                    "SAVE CHANGES",
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = 1.sp,
-                    color = if (target.isNotBlank() && description.isNotBlank())
-                        Color.White else TextMuted2
-                )
+                Text("SAVE LOG CHANGES", fontWeight = FontWeight.Black, letterSpacing = 1.5.sp)
             }
 
             Spacer(modifier = Modifier.height(40.dp))
+        }
+    }
+}
+
+@Composable
+fun EvidenceBox(model: Any, isNew: Boolean, onRemove: () -> Unit) {
+    Box(modifier = Modifier.size(100.dp)) {
+        AsyncImage(
+            model = model,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(20.dp))
+                .border(1.dp, if (isNew) ElectricBlue else BorderGlass, RoundedCornerShape(20.dp))
+        )
+        Surface(
+            modifier = Modifier.align(Alignment.TopEnd).padding(6.dp).size(24.dp).clickable { onRemove() },
+            shape = CircleShape,
+            color = Color.Black.copy(alpha = 0.7f)
+        ) {
+            Icon(Icons.Default.Close, null, tint = Color.White, modifier = Modifier.padding(4.dp))
         }
     }
 }

@@ -11,6 +11,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.Modifier
 import com.example.witnessitproject.ui.theme.screens.admin.AdminScreen
+import com.example.witnessitproject.ui.theme.screens.admin.AuthorityScreen
 import com.example.witnessitproject.ui.theme.screens.dashboard.BottomNavBar
 import com.example.witnessitproject.ui.theme.screens.dashboard.HomeScreen
 import com.example.witnessitproject.ui.theme.screens.login.LoginScreen
@@ -28,7 +29,8 @@ val noBottomBarRoutes = listOf(
     ROUTE_SPLASH_SCREEN,
     ROUTE_LOGIN,
     ROUTE_REGISTER,
-    ROUTE_ADMIN
+    ROUTE_ADMIN,
+    ROUTE_AUTHORITY
 )
 
 @Composable
@@ -89,6 +91,9 @@ fun AppNavHost(
             }
             composable(ROUTE_ADMIN) {
                 AdminScreen(navController)
+            }
+            composable(ROUTE_AUTHORITY) {
+                AuthorityScreen(navController)
             }
         }
     }

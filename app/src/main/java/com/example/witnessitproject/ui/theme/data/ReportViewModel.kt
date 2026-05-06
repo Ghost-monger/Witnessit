@@ -380,4 +380,31 @@ class ReportViewModel : ViewModel() {
                 Toast.makeText(context, "Failed to reject", Toast.LENGTH_SHORT).show()
             }
     }
+    private val _highPriorityReports = mutableStateListOf<ReportModel>()
+    val highPriorityReports: List<ReportModel> = _highPriorityReports
+
+    fun fetchHighPriorityReports(context: Context) {
+        firestore.collection("reports")
+            .whereEqualTo("status", "approved")
+            .whereGreaterThanOrEqualTo("upvotes", 50)
+            .orderBy("upvotes", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                _highPriorityReports.clear()
+                for (doc in snapshot.documents) {
+                    val report = doc.toObject(ReportModel::class.java)
+                    report?.let {
+                        it.reportId = doc.id
+                        _highPriorityReports.add(it)
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(
+                    context,
+                    "Failed to load high priority reports: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+    }
 }

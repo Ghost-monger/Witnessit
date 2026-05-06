@@ -37,14 +37,17 @@ import com.example.witnessitproject.R
 import com.example.witnessitproject.ui.theme.data.AuthViewModel
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_REGISTER
 
-// ── Enhanced WitnessIt / FakeAlert KE Tech Theme ───────────────────────────
-private val DarkBg      = Color(0xFF05070A) // Deep Tech Black
-private val CardBg      = Color(0xFF0D1321) // Navy-tinged Slate
-private val Border      = Color(0xFF1E2D5A) // Structural Blue
-private val Accent      = Color(0xFFFF3D00) // Vibrant Safety Orange/Red
-private val NeonCyan    = Color(0xFF00E5FF) // Techy Cyber Blue
-private val TextMuted   = Color(0xFF94A3B8)
-private val TextDim     = Color(0xFF475569)
+// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+private val DeepSpace    = Color(0xFF020617)
+private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
+private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
+
+private val ElectricBlue = Color(0xFF6366F1) // Primary Action
+private val NeonEmerald  = Color(0xFF10B981) // Trust/Safety
+private val AlertCoral   = Color(0xFFFB7185) // Alert/Accent
+
+private val TextMuted    = Color(0xFF94A3B8)
+private val TextDim      = Color(0xFF64748B)
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -60,16 +63,16 @@ fun LoginScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBg),
+            .background(DeepSpace),
         contentAlignment = Alignment.Center
     ) {
-        // Subtle Background Glow for that "Interactive" feel
+        // Vibrant "Lurking" Glow - Radial effect
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(Accent.copy(alpha = 0.12f), Color.Transparent),
-                    center = Offset(size.width * 0.9f, size.height * 0.1f),
-                    radius = 1000f
+                    colors = listOf(ElectricBlue.copy(alpha = 0.08f), Color.Transparent),
+                    center = Offset(size.width * 0.1f, size.height * 0.9f),
+                    radius = 1200f
                 )
             )
         }
@@ -81,86 +84,88 @@ fun LoginScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // App icon with glowing border
+            // App icon bubble with Neon Emerald "Safe" glow
             Box(
                 modifier = Modifier
                     .size(86.dp)
                     .clip(CircleShape)
-                    .background(Brush.linearGradient(listOf(CardBg, Border))),
+                    .background(NeonEmerald.copy(alpha = 0.1f))
+                    .padding(8.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "🚨", fontSize = 38.sp)
+                Text(text = "🚨", fontSize = 42.sp)
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-            // App name with techy shadow
             Text(
-                text = "WITNESS IT ",
+                text = "WITNESS IT",
                 style = TextStyle(
-                    fontSize = 28.sp,
+                    fontSize = 32.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.White,
-                    letterSpacing = 2.sp,
-                    shadow = Shadow(color = Accent.copy(alpha = 0.5f), blurRadius = 15f)
+                    letterSpacing = 1.5.sp,
+                    shadow = Shadow(color = ElectricBlue.copy(alpha = 0.3f), blurRadius = 20f)
                 )
             )
 
             Text(
                 text = "COMMUNITY INTELLIGENCE SYSTEM",
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                color = NeonCyan,
-                letterSpacing = 1.5.sp,
-                modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
+                fontSize = 11.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = NeonEmerald,
+                letterSpacing = 2.sp,
+                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
             )
 
             Text(
-                text = "🔒 Secure database connection active",
-                fontSize = 11.sp,
-                color = TextMuted,
-                modifier = Modifier.padding(bottom = 24.dp)
+                text = "✓ Encrypted Connection Verified",
+                fontSize = 12.sp,
+                color = TextDim,
+                modifier = Modifier.padding(bottom = 32.dp)
             )
 
-            // Login card - Glassmorphism style
+            // Glassmorphism Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(28.dp),
-                colors = CardDefaults.cardColors(containerColor = CardBg.copy(alpha = 0.9f)),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Border)
+                colors = CardDefaults.cardColors(containerColor = CardGlass),
+                border = BorderStroke(1.dp, BorderGlass)
             ) {
                 Column(
                     modifier = Modifier.padding(24.dp),
-                    verticalArrangement = Arrangement.spacedBy(18.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
 
                     // Email field
                     Column {
                         Text(
-                            text = "Email",
+                            text = "ACCESS IDENTIFIER (EMAIL)",
                             fontSize = 10.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = NeonCyan.copy(alpha = 0.8f),
+                            fontWeight = FontWeight.Bold,
+                            color = TextMuted,
                             modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
                         )
                         OutlinedTextField(
                             value = email,
                             onValueChange = { email = it },
                             placeholder = {
-                                Text("email@witnessit.ke", color = TextDim, fontSize = 14.sp)
+                                Text("Enter your registered email", color = TextDim, fontSize = 14.sp)
                             },
                             leadingIcon = {
-                                Icon(Icons.Default.Email, null, tint = Accent.copy(alpha = 0.8f))
+                                Icon(Icons.Default.Email, null, tint = ElectricBlue)
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(16.dp),
                             singleLine = true,
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = NeonCyan,
-                                unfocusedBorderColor = Border,
+                                focusedBorderColor = ElectricBlue,
+                                unfocusedBorderColor = BorderGlass,
+                                focusedContainerColor = Color.White.copy(alpha = 0.05f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.02f),
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
-                                cursorColor = Accent
+                                cursorColor = NeonEmerald
                             )
                         )
                     }
@@ -168,10 +173,10 @@ fun LoginScreen(navController: NavController) {
                     // Password field
                     Column {
                         Text(
-                            text = "Password",
+                            text = "SECURITY KEY (PASSWORD)",
                             fontSize = 10.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = NeonCyan.copy(alpha = 0.8f),
+                            fontWeight = FontWeight.Bold,
+                            color = TextMuted,
                             modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
                         )
                         OutlinedTextField(
@@ -181,91 +186,77 @@ fun LoginScreen(navController: NavController) {
                                 Text("••••••••", color = TextDim, fontSize = 14.sp)
                             },
                             leadingIcon = {
-                                Icon(Icons.Default.Lock, null, tint = Accent.copy(alpha = 0.8f))
+                                Icon(Icons.Default.Lock, null, tint = ElectricBlue)
                             },
                             trailingIcon = {
                                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                     Icon(
-                                        imageVector = if (passwordVisible)
-                                            Icons.Default.VisibilityOff
-                                        else
-                                            Icons.Default.Visibility,
+                                        imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                         contentDescription = null,
                                         tint = TextDim
                                     )
                                 }
                             },
-                            visualTransformation = if (passwordVisible)
-                                VisualTransformation.None
-                            else
-                                PasswordVisualTransformation(),
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(16.dp),
                             singleLine = true,
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = NeonCyan,
-                                unfocusedBorderColor = Border,
+                                focusedBorderColor = ElectricBlue,
+                                unfocusedBorderColor = BorderGlass,
+                                focusedContainerColor = Color.White.copy(alpha = 0.05f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.02f),
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
-                                cursorColor = Accent
+                                cursorColor = NeonEmerald
                             )
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                    // Login button — tech refined
+                    // Primary Login Button
                     Button(
                         onClick = {
-                            authViewModel.login(
-                                email = email,
-                                password = password,
-                                navController = navController,
-                                context = context
-                            )
+                            authViewModel.login(email, password, navController, context)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Accent,
+                            containerColor = ElectricBlue,
                             contentColor = Color.White
                         )
                     ) {
                         Text(
-                            text = "Log In",
+                            text = "SECURE LOGIN",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Black,
                             letterSpacing = 1.sp
                         )
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
 
+                    // Divider
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        HorizontalDivider(modifier = Modifier.weight(1f), color = Color(0xFF1E2D5A))
-                        Text("  OR  ", color = Color(0xFF5A6A90), fontSize = 12.sp)
-                        HorizontalDivider(modifier = Modifier.weight(1f), color = Color(0xFF1E2D5A))
+                        HorizontalDivider(modifier = Modifier.weight(1f), color = BorderGlass)
+                        Text("  OR  ", color = TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        HorizontalDivider(modifier = Modifier.weight(1f), color = BorderGlass)
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
+                    // Google Button
                     OutlinedButton(
                         onClick = {
-                            authViewModel.signInWithGoogle(
-                                context = context,
-                                navController = navController,
-                                scope = scope
-                            )
+                            authViewModel.signInWithGoogle(context, navController, scope)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
                         shape = RoundedCornerShape(14.dp),
-                        border = BorderStroke(1.dp, Color(0xFF1E2D5A))
+                        border = BorderStroke(1.dp, BorderGlass)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
@@ -274,33 +265,32 @@ fun LoginScreen(navController: NavController) {
                                 tint = Color.Unspecified,
                                 modifier = Modifier.size(20.dp)
                             )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Text("Continue with Google", color = Color.White)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Continue with Google", color = Color.White, fontWeight = FontWeight.Medium)
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-            // Register link
+            // Navigation to Register
             Row {
                 Text(
                     text = "Are you new here? ",
-                    color = TextDim,
-                    fontSize = 13.sp
+                    color = TextMuted,
+                    fontSize = 14.sp
                 )
                 Text(
                     text = "Register Here",
-                    color = NeonCyan,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
+                    color = NeonEmerald,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.ExtraBold,
                     modifier = Modifier.clickable {
                         navController.navigate(ROUTE_REGISTER)
                     }
                 )
             }
-
         }
     }
 }

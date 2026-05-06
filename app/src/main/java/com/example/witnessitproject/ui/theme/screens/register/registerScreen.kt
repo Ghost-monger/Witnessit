@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -31,17 +32,16 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.witnessitproject.R
 
-
-// ── WitnessIt Theme Colors ─────────────────────────────
-val NavyDark   = Color(0xFF020617)
-private val NavyMid    = Color(0xFF0F172A)
-private val NavyCard   = Color(0xFF1E293B)
-private val NavyBorder = Color(0xFF334155)
-
-val AccentRed  = Color(0xFFE11D48)
+// ── WitnessIt Vibrant Theme Colors ─────────────────────
+val DeepSpace    = Color(0xFF020617) // Background
+val ElectricBlue = Color(0xFF6366F1) // Primary Action
+val NeonEmerald  = Color(0xFF10B981) // Safety/Success
+val SoftCoral    = Color(0xFFFB7185) // Danger/Accent
+val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
+val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
 private val TextMuted  = Color(0xFF94A3B8)
-val TextDim    = Color(0xFF64748B)
+private val TextDim    = Color(0xFF64748B)
 
 // ── Register Screen ────────────────────────────────────
 @Composable
@@ -59,10 +59,19 @@ fun RegisterScreen(navController: NavController) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
+    // Vibrant background with "lurking" color
+    val backgroundBrush = Brush.verticalGradient(
+        colors = listOf(
+            DeepSpace,
+            Color(0xFF1E1B4B), // Very deep Indigo "lurk"
+            DeepSpace
+        )
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(NavyDark),
+            .background(backgroundBrush),
         contentAlignment = Alignment.Center
     ) {
 
@@ -76,44 +85,46 @@ fun RegisterScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // ── Logo ────────────────────────────
+            // ── Shield Logo with Glow ────────────────────
             Box(
                 modifier = Modifier
                     .size(90.dp)
                     .clip(CircleShape)
-                    .background(NavyCard),
+                    .background(ElectricBlue.copy(alpha = 0.15f))
+                    .padding(8.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("🛡️", fontSize = 36.sp)
+                // Use Emerald for safety vibe
+                Text("🛡️", fontSize = 42.sp)
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = "Create Account",
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.ExtraBold,
                 color = Color.White
             )
 
             Text(
                 text = "Join WitnessIt — report and verify with confidence",
-                fontSize = 13.sp,
-                color = TextDim,
-                modifier = Modifier.padding(bottom = 28.dp)
+                fontSize = 14.sp,
+                color = TextMuted,
+                modifier = Modifier.padding(top = 4.dp, bottom = 32.dp)
             )
 
-            // ── Card ────────────────────────────
+            // ── Glassmorphism Card ─────────────────────
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = NavyMid),
-                border = BorderStroke(1.dp, NavyBorder)
+                shape = RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(containerColor = CardGlass),
+                border = BorderStroke(1.dp, BorderGlass)
             ) {
 
                 Column(
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 28.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 32.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
 
                     ParkField(
@@ -121,7 +132,7 @@ fun RegisterScreen(navController: NavController) {
                         value = username,
                         onValueChange = { username = it },
                         placeholder = "Enter username",
-                        leadingIcon = { Icon(Icons.Default.Person, null, tint = TextDim) }
+                        leadingIcon = { Icon(Icons.Default.Person, null, tint = ElectricBlue) }
                     )
 
                     ParkField(
@@ -129,7 +140,7 @@ fun RegisterScreen(navController: NavController) {
                         value = email,
                         onValueChange = { email = it },
                         placeholder = "Enter email address",
-                        leadingIcon = { Icon(Icons.Default.Email, null, tint = TextDim) }
+                        leadingIcon = { Icon(Icons.Default.Email, null, tint = ElectricBlue) }
                     )
 
                     ParkField(
@@ -137,7 +148,7 @@ fun RegisterScreen(navController: NavController) {
                         value = phonenumber,
                         onValueChange = { phonenumber = it },
                         placeholder = "Enter your phone number",
-                        leadingIcon = { Icon(Icons.Default.Phone, null, tint = TextDim) }
+                        leadingIcon = { Icon(Icons.Default.Phone, null, tint = ElectricBlue) }
                     )
 
                     ParkField(
@@ -145,21 +156,17 @@ fun RegisterScreen(navController: NavController) {
                         value = password,
                         onValueChange = { password = it },
                         placeholder = "Create a password",
-                        leadingIcon = { Icon(Icons.Default.Lock, null, tint = TextDim) },
+                        leadingIcon = { Icon(Icons.Default.Lock, null, tint = ElectricBlue) },
                         trailingIcon = {
                             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                 Icon(
-                                    imageVector = if (passwordVisible)
-                                        Icons.Default.VisibilityOff
-                                    else Icons.Default.Visibility,
+                                    imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                     contentDescription = null,
                                     tint = TextDim
                                 )
                             }
                         },
-                        visualTransformation = if (passwordVisible)
-                            VisualTransformation.None
-                        else PasswordVisualTransformation()
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
                     )
 
                     ParkField(
@@ -167,46 +174,39 @@ fun RegisterScreen(navController: NavController) {
                         value = confirmpassword,
                         onValueChange = { confirmpassword = it },
                         placeholder = "Repeat your password",
-                        leadingIcon = { Icon(Icons.Default.Check, null, tint = TextDim) },
+                        leadingIcon = { Icon(Icons.Default.CheckCircle, null, tint = ElectricBlue) },
                         trailingIcon = {
                             IconButton(onClick = { confirmPwVisible = !confirmPwVisible }) {
                                 Icon(
-                                    imageVector = if (confirmPwVisible)
-                                        Icons.Default.VisibilityOff
-                                    else Icons.Default.Visibility,
+                                    imageVector = if (confirmPwVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                     contentDescription = null,
                                     tint = TextDim
                                 )
                             }
                         },
-                        visualTransformation = if (confirmPwVisible)
-                            VisualTransformation.None
-                        else PasswordVisualTransformation()
+                        visualTransformation = if (confirmPwVisible) VisualTransformation.None else PasswordVisualTransformation()
                     )
 
-                    // ── Register Button ─────────────────
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // ── Primary Action Button ───────────
                     Button(
                         onClick = {
-                            authViewModel.signup(
-                                username,
-                                email,
-                                phonenumber,
-                                password,
-                                confirmpassword,
-                                navController,
-                                context
-                            )
+                            authViewModel.signup(username, email, phonenumber, password, confirmpassword, navController, context)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(14.dp),
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = AccentRed,
+                            containerColor = ElectricBlue,
                             contentColor = Color.White
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            // Adding elevation for that "Vibrant" pop
                         )
                     ) {
-                        Text("Create Account", fontWeight = FontWeight.Bold)
+                        Text("Secure Registration", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
 
                     // ── Divider ─────────────────────────
@@ -214,25 +214,21 @@ fun RegisterScreen(navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Divider(modifier = Modifier.weight(1f), color = NavyBorder)
-                        Text("  OR  ", color = TextDim, fontSize = 12.sp)
-                        Divider(modifier = Modifier.weight(1f), color = NavyBorder)
+                        HorizontalDivider(modifier = Modifier.weight(1f), color = BorderGlass)
+                        Text("  OR  ", color = TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        HorizontalDivider(modifier = Modifier.weight(1f), color = BorderGlass)
                     }
 
                     // ── Google Sign-In ──────────────────
                     OutlinedButton(
                         onClick = {
-                            authViewModel.signInWithGoogle(
-                                context = context,
-                                navController = navController,
-                                scope = scope
-                            )
+                            authViewModel.signInWithGoogle(context, navController, scope)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(14.dp),
-                        border = BorderStroke(1.dp, NavyBorder)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(1.dp, BorderGlass)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
@@ -241,21 +237,21 @@ fun RegisterScreen(navController: NavController) {
                                 tint = Color.Unspecified,
                                 modifier = Modifier.size(20.dp)
                             )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Text("Continue with Google", color = Color.White)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Continue with Google", color = Color.White, fontWeight = FontWeight.Medium)
                         }
                     }
 
                     // ── Login Link ──────────────────────
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text("Already registered? ", color = TextDim)
+                        Text("Already registered? ", color = TextMuted)
                         Text(
                             "Login here",
-                            color = AccentRed,
-                            fontWeight = FontWeight.SemiBold,
+                            color = NeonEmerald, // Using safety green as a link color
+                            fontWeight = FontWeight.Bold,
                             modifier = Modifier.clickable {
                                 navController.navigate(ROUTE_LOGIN)
                             }
@@ -263,13 +259,12 @@ fun RegisterScreen(navController: NavController) {
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
 
-// ── Reusable Field ─────────────────────────────────────
+// ── Vibrant Input Field ────────────────────────────────
 @Composable
 fun ParkField(
     label: String,
@@ -284,8 +279,9 @@ fun ParkField(
         Text(
             text = label,
             color = TextMuted,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.SemiBold
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
         )
         OutlinedTextField(
             value = value,
@@ -296,13 +292,13 @@ fun ParkField(
             visualTransformation = visualTransformation,
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(16.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = AccentRed,
-                unfocusedBorderColor = NavyBorder,
-                focusedContainerColor = NavyCard,
-                unfocusedContainerColor = NavyCard,
-                cursorColor = AccentRed,
+                focusedBorderColor = ElectricBlue,
+                unfocusedBorderColor = BorderGlass,
+                focusedContainerColor = Color.White.copy(alpha = 0.05f),
+                unfocusedContainerColor = Color.White.copy(alpha = 0.02f),
+                cursorColor = NeonEmerald,
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White
             )

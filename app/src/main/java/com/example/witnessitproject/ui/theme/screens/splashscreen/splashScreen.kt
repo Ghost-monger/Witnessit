@@ -24,10 +24,11 @@ import com.example.witnessitproject.ui.theme.navigation.ROUTE_DASHBOARD
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_SPLASH_SCREEN
 import kotlinx.coroutines.delay
 
-// ── Enhanced WitnessIt Tech Theme ───────────────────────────
-private val DarkBg      = Color(0xFF05070A)
-private val Accent      = Color(0xFFFF3D00) // Safety Orange
-private val NeonCyan    = Color(0xFF00E5FF) // Tech Blue
+// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+private val DeepSpace    = Color(0xFF020617)
+private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
+private val ElectricBlue = Color(0xFF6366F1) // Primary Action/Trust
+private val AlertCoral   = Color(0xFFFB7185) // Threat/Danger
 private val TextMuted   = Color(0xFF94A3B8)
 
 @Composable
@@ -42,9 +43,9 @@ fun SplashScreen(navController: NavController) {
     val infiniteTransition = rememberInfiniteTransition(label = "glow")
     val pulseScale by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = 1.2f,
+        targetValue = 1.3f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1200, easing = FastOutSlowInEasing),
+            animation = tween(1500, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ), label = "pulse"
     )
@@ -62,7 +63,7 @@ fun SplashScreen(navController: NavController) {
         alpha.animateTo(targetValue = 1f, animationSpec = tween(800))
         textAlpha.animateTo(targetValue = 1f, animationSpec = tween(1000))
 
-        delay(2500L) // Wait for boot-up sequence
+        delay(2500L) // Boot-up delay
 
         navController.navigate(ROUTE_DASHBOARD) {
             popUpTo(ROUTE_SPLASH_SCREEN) { inclusive = true }
@@ -72,16 +73,16 @@ fun SplashScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBg),
+            .background(DeepSpace),
         contentAlignment = Alignment.Center
     ) {
-        // Background mesh glow
+        // --- VISUAL LAYER: Background Core Pulse ---
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(Accent.copy(alpha = 0.07f), Color.Transparent),
+                    colors = listOf(ElectricBlue.copy(alpha = 0.1f), Color.Transparent),
                     center = Offset(size.width * 0.5f, size.height * 0.5f),
-                    radius = 800f
+                    radius = 900f
                 )
             )
         }
@@ -92,28 +93,28 @@ fun SplashScreen(navController: NavController) {
         ) {
             // Shield Icon with pulsing outer ring
             Box(contentAlignment = Alignment.Center) {
-                // Animated outer glow ring
+                // Animated outer glow ring (Coral Pulse)
                 Box(
                     modifier = Modifier
-                        .size(120.dp)
+                        .size(130.dp)
                         .scale(pulseScale)
-                        .alpha(alpha.value * 0.3f)
-                        .background(Accent.copy(alpha = 0.2f), CircleShape)
+                        .alpha(alpha.value * 0.2f)
+                        .background(AlertCoral.copy(alpha = 0.3f), CircleShape)
                 )
 
-                // Main Shield Icon
+                // Main Shield Icon Container
                 Box(
                     modifier = Modifier
                         .scale(scale.value)
                         .alpha(alpha.value)
-                        .size(90.dp)
+                        .size(100.dp)
                         .background(
-                            Brush.linearGradient(listOf(Color(0xFF0D1321), Color(0xFF1E2D5A))),
+                            Brush.linearGradient(listOf(CardGlass, Color(0xFF1E293B))),
                             shape = CircleShape
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "🛡️", fontSize = 42.sp)
+                    Text(text = "🛡️", fontSize = 48.sp)
                 }
             }
 
@@ -121,63 +122,63 @@ fun SplashScreen(navController: NavController) {
 
             // App Name with Cyber Shadow
             Text(
-                text = "WITNESS IT KE",
+                text = "WITNESS IT",
                 style = TextStyle(
-                    fontSize = 32.sp,
+                    fontSize = 36.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.White,
                     letterSpacing = 4.sp,
-                    shadow = Shadow(color = Accent.copy(alpha = 0.6f), blurRadius = 20f)
+                    shadow = Shadow(color = ElectricBlue.copy(alpha = 0.6f), blurRadius = 25f)
                 ),
                 modifier = Modifier.alpha(textAlpha.value)
             )
 
             Spacer(Modifier.height(8.dp))
 
-            // Sub-header logic
+            // Tech Sub-header
             Text(
-                text = "COMMUNITY THREAT INTELLIGENCE",
-                fontSize = 10.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = NeonCyan,
+                text = "VIGILANT COMMUNITY NETWORK",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Black,
+                color = ElectricBlue,
                 letterSpacing = 2.sp,
                 modifier = Modifier.alpha(textAlpha.value)
             )
 
-            Spacer(Modifier.height(60.dp))
+            Spacer(Modifier.height(64.dp))
 
             // Loading Bar (Tech Style)
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 LinearProgressIndicator(
                     modifier = Modifier
-                        .width(120.dp)
-                        .height(2.dp)
+                        .width(140.dp)
+                        .height(3.dp)
                         .alpha(textAlpha.value),
-                    color = Accent,
-                    trackColor = Color.White.copy(alpha = 0.1f)
+                    color = ElectricBlue,
+                    trackColor = Color.White.copy(alpha = 0.05f)
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 Text(
-                    text = "INITIALIZING CORE...",
-                    fontSize = 9.sp,
+                    text = "ESTABLISHING SECURE UPLINK...",
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextMuted,
-                    letterSpacing = 1.sp,
+                    letterSpacing = 1.2.sp,
                     modifier = Modifier.alpha(textAlpha.value)
                 )
             }
         }
 
-        // Footer Tag
+        // Footer Metadata
         Text(
-            text = "SECURE NETWORK // ENCRYPTED ACCESS",
+            text = "VERIFIED ACCESS // KORE DATA SYNC",
             fontSize = 9.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White.copy(alpha = 0.3f),
+            fontWeight = FontWeight.ExtraBold,
+            color = Color.White.copy(alpha = 0.2f),
             letterSpacing = 1.5.sp,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 32.dp)
+                .padding(bottom = 40.dp)
                 .alpha(textAlpha.value)
         )
     }

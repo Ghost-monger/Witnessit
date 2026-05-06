@@ -38,14 +38,18 @@ import com.example.witnessitproject.data.ReportViewModel
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_EDIT_REPORT
 import com.google.firebase.auth.FirebaseAuth
 
-// ── Enhanced WitnessIt Tech Theme ───────────────────────────
-private val DarkBg      = Color(0xFF05070A)
-private val CardBg      = Color(0xFF0D1321)
-private val Border      = Color(0xFF1E2D5A)
-private val Accent      = Color(0xFFFF3D00) // Safety Orange
-private val NeonCyan    = Color(0xFF00E5FF) // Tech Blue
-private val TextMuted   = Color(0xFF94A3B8)
-private val TextDim     = Color(0xFF475569)
+// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+private val DeepSpace    = Color(0xFF020617)
+private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
+private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
+
+private val ElectricBlue = Color(0xFF6366F1) // Primary Action
+private val NeonEmerald  = Color(0xFF10B981) // Verified Status
+private val AlertCoral   = Color(0xFFFB7185) // Alert/Danger/Delete
+
+private val TextPrimary  = Color(0xFFF8FAFC)
+private val TextMuted    = Color(0xFF94A3B8)
+private val TextDim      = Color(0xFF475569)
 
 @Composable
 fun RecordDetailScreen(
@@ -65,8 +69,8 @@ fun RecordDetailScreen(
     val report = viewModel.reports.find { it.reportId == reportId }
 
     if (report == null) {
-        Box(modifier = Modifier.fillMaxSize().background(DarkBg), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = NeonCyan)
+        Box(modifier = Modifier.fillMaxSize().background(DeepSpace), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = ElectricBlue)
         }
         return
     }
@@ -77,70 +81,77 @@ fun RecordDetailScreen(
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text("WIPE DATA?", color = Color.White, fontWeight = FontWeight.Black) },
-            text = { Text("This record will be permanently deleted from the secure database.", color = TextMuted) },
+            text = { Text("This record will be permanently purged from the secure database.", color = TextMuted) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deleteReport(report.reportId, context)
                     showDeleteDialog = false
                     navController.popBackStack()
-                }) { Text("PURGE", color = Accent, fontWeight = FontWeight.Bold) }
+                }) { Text("PURGE", color = AlertCoral, fontWeight = FontWeight.Black) }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) { Text("CANCEL", color = TextMuted) }
             },
-            containerColor = CardBg,
-            shape = RoundedCornerShape(20.dp)
+            containerColor = Color(0xFF1E293B),
+            shape = RoundedCornerShape(24.dp)
         )
     }
 
     Scaffold(
-        containerColor = DarkBg,
+        containerColor = DeepSpace,
         topBar = {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp).statusBarsPadding(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = NeonCyan)
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.background(CardGlass, CircleShape).border(1.dp, BorderGlass, CircleShape)
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = ElectricBlue)
                 }
 
                 Text(
                     text = "INCIDENT DOSSIER",
                     style = TextStyle(
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.White,
                         letterSpacing = 2.sp
                     )
                 )
 
-                Row {
-                    IconButton(onClick = {
-                        val shareText = "⚠️ SCAM ALERT: ${report.target}\nType: ${report.scamType}\nFlags: ${report.upvotes}\nStay safe with FakeAlert KE!"
-                        val intent = Intent(Intent.ACTION_SEND).apply {
-                            type = "text/plain"
-                            putExtra(Intent.EXTRA_TEXT, shareText)
-                        }
-                        context.startActivity(Intent.createChooser(intent, "Share via"))
-                    }) {
-                        Icon(Icons.Default.Share, "Share", tint = Color.White)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    IconButton(
+                        onClick = {
+                            val shareText = "⚠️ WITNESS IT ALERT: ${report.target}\nType: ${report.scamType}\nVerified: ${report.verified}\nReported via WitnessIt KE"
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_TEXT, shareText)
+                            }
+                            context.startActivity(Intent.createChooser(intent, "Share Dossier"))
+                        },
+                        modifier = Modifier.background(CardGlass, CircleShape).border(1.dp, BorderGlass, CircleShape)
+                    ) {
+                        Icon(Icons.Default.Share, "Share", tint = Color.White, modifier = Modifier.size(20.dp))
                     }
 
                     if (currentUserId == report.reportedBy) {
                         IconButton(
-                            onClick = {
-                                navController.navigate("${ROUTE_EDIT_REPORT}/${report.reportId}")
-                            }
+                            onClick = { navController.navigate("${ROUTE_EDIT_REPORT}/${report.reportId}") },
+                            modifier = Modifier.background(CardGlass, CircleShape).border(1.dp, BorderGlass, CircleShape)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Edit",
-                                tint = Color.White
-                            )
+                            Icon(Icons.Default.Edit, "Edit", tint = Color.White, modifier = Modifier.size(20.dp))
                         }
-                        IconButton(onClick = { showDeleteDialog = true }) {
-                            Icon(Icons.Default.Delete, "Delete", tint = Accent)
+                        IconButton(
+                            onClick = { showDeleteDialog = true },
+                            modifier = Modifier.background(AlertCoral.copy(0.1f), CircleShape).border(1.dp, AlertCoral.copy(0.3f), CircleShape)
+                        ) {
+                            Icon(Icons.Default.Delete, "Delete", tint = AlertCoral, modifier = Modifier.size(20.dp))
                         }
                     }
                 }
@@ -151,9 +162,9 @@ fun RecordDetailScreen(
             // Background Glow
             Canvas(modifier = Modifier.fillMaxSize()) {
                 drawCircle(
-                    brush = Brush.radialGradient(listOf(NeonCyan.copy(0.05f), Color.Transparent)),
+                    brush = Brush.radialGradient(listOf(ElectricBlue.copy(0.06f), Color.Transparent)),
                     center = Offset(size.width * 0.1f, size.height * 0.1f),
-                    radius = 800f
+                    radius = 900f
                 )
             }
 
@@ -162,151 +173,147 @@ fun RecordDetailScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 // ── Status Badges ────────
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = Accent.copy(0.1f),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Accent.copy(0.5f))
-                    ) {
-                        Text(
-                            report.scamType.uppercase(),
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Black,
-                            color = Accent,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                        )
-                    }
+                    StatusBadge(text = report.scamType.uppercase(), color = ElectricBlue)
 
-                    val statusColor = if (report.verified) Color.Green else TextDim
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = statusColor.copy(0.1f),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, statusColor.copy(0.5f))
-                    ) {
-                        Text(
-                            if (report.verified) "VERIFIED THREAT" else "PENDING ANALYSIS",
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Black,
-                            color = statusColor,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                        )
-                    }
+                    val statusColor = if (report.verified) NeonEmerald else AlertCoral
+                    StatusBadge(
+                        text = if (report.verified) "VERIFIED THREAT" else "UNVERIFIED REPORT",
+                        color = statusColor
+                    )
                 }
 
                 // ── Target Card ────────
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = CardBg),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Border)
-                ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
-                        Text("IDENTIFIED TARGET", fontSize = 10.sp, color = NeonCyan, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = report.target,
-                            style = TextStyle(
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Black,
-                                color = Color.White,
-                                shadow = Shadow(color = NeonCyan.copy(0.3f), blurRadius = 10f)
-                            )
+                DetailCard {
+                    Text("IDENTIFIED TARGET", fontSize = 10.sp, color = ElectricBlue, fontWeight = FontWeight.Black, letterSpacing = 1.5.sp)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = report.target,
+                        style = TextStyle(
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color.White,
+                            shadow = Shadow(color = ElectricBlue.copy(0.4f), blurRadius = 15f)
                         )
-                    }
+                    )
                 }
 
                 // ── Description Card ────────
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = CardBg.copy(0.6f)),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Border)
-                ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
-                        Text("INTEL SUMMARY", fontSize = 10.sp, color = TextMuted, fontWeight = FontWeight.Black)
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text(report.description, fontSize = 15.sp, color = Color.White, lineHeight = 24.sp)
-                    }
+                DetailCard(containerColor = CardGlass.copy(0.5f)) {
+                    Text("INTEL SUMMARY", fontSize = 10.sp, color = TextMuted, fontWeight = FontWeight.Black, letterSpacing = 1.2.sp)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(report.description, fontSize = 15.sp, color = Color.White, lineHeight = 24.sp)
                 }
 
                 // ── Evidence Section ────────
                 if (report.evidenceUrls.isNotEmpty()) {
                     Column {
-                        Text("ATTACHED EVIDENCE", fontSize = 10.sp, color = TextMuted, fontWeight = FontWeight.Black, modifier = Modifier.padding(bottom = 10.dp))
-                        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text("ATTACHED EVIDENCE", fontSize = 11.sp, color = TextMuted, fontWeight = FontWeight.Black, modifier = Modifier.padding(bottom = 12.dp))
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                             items(report.evidenceUrls) { url ->
                                 AsyncImage(
                                     model = url,
                                     contentDescription = "Evidence",
                                     contentScale = ContentScale.Crop,
-                                    modifier = Modifier.size(220.dp).clip(RoundedCornerShape(20.dp)).border(1.dp, Border, RoundedCornerShape(20.dp))
+                                    modifier = Modifier
+                                        .size(240.dp)
+                                        .clip(RoundedCornerShape(24.dp))
+                                        .border(1.dp, BorderGlass, RoundedCornerShape(24.dp))
                                 )
                             }
                         }
                     }
                 }
 
-                // ── Flag / Upvote Action ────────
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = CardBg),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Border)
-                ) {
+                // ── Community Flag Action ────────
+                DetailCard {
                     Row(
-                        modifier = Modifier.padding(20.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
                             Text(
                                 text = "${report.upvotes}",
-                                style = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Black, color = Accent, shadow = Shadow(Accent.copy(0.4f), blurRadius = 10f))
+                                style = TextStyle(
+                                    fontSize = 36.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = AlertCoral,
+                                    shadow = Shadow(AlertCoral.copy(0.4f), blurRadius = 15f)
+                                )
                             )
-                            Text("COMMUNITY FLAGS", fontSize = 10.sp, color = TextMuted, fontWeight = FontWeight.Bold)
+                            Text("COMMUNITY FLAGS", fontSize = 10.sp, color = TextMuted, fontWeight = FontWeight.Black)
                         }
 
                         Button(
                             onClick = { viewModel.upvoteReport(report.reportId, context) },
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Accent)
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = AlertCoral),
+                            modifier = Modifier.height(50.dp)
                         ) {
-                            Text("⚠️ FLAG TARGET", fontWeight = FontWeight.Black)
+                            Text("⚠️ FLAG TARGET", fontWeight = FontWeight.Black, letterSpacing = 1.sp)
                         }
                     }
                 }
 
                 // ── Metadata Card ────────
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = CardBg.copy(0.4f)),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Border)
-                ) {
-                    Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text("SYSTEM LOGS", fontSize = 10.sp, color = NeonCyan, fontWeight = FontWeight.Black)
-                        HorizontalDivider(color = Border)
+                DetailCard(containerColor = Color.Transparent) {
+                    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                        Text("SYSTEM METRICS", fontSize = 10.sp, color = ElectricBlue, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
+                        HorizontalDivider(color = BorderGlass)
                         MetadataRow("LOGGED ON", report.timestamp?.toDate()?.let {
                             java.text.SimpleDateFormat("dd MMM yyyy | HH:mm", java.util.Locale.getDefault()).format(it)
-                        } ?: "N/A")
+                        } ?: "PENDING...")
                         MetadataRow("THREAT LEVEL", if (report.verified) "CRITICAL" else "ELEVATED")
-                        MetadataRow("DATA SOURCE", "COMMUNITY FEED")
+                        MetadataRow("SOURCE", "COMMUNITY UPLINK")
                     }
                 }
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(50.dp))
             }
         }
     }
 }
 
 @Composable
+fun StatusBadge(text: String, color: Color) {
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = color.copy(0.12f),
+        border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(0.4f))
+    ) {
+        Text(
+            text,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Black,
+            color = color,
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
+        )
+    }
+}
+
+@Composable
+fun DetailCard(
+    containerColor: Color = CardGlass,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        border = androidx.compose.foundation.BorderStroke(1.dp, BorderGlass)
+    ) {
+        Column(modifier = Modifier.padding(24.dp), content = content)
+    }
+}
+
+@Composable
 fun MetadataRow(label: String, value: String) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, fontSize = 11.sp, color = TextDim, fontWeight = FontWeight.Bold)
-        Text(value, fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Medium)
+        Text(label, fontSize = 12.sp, color = TextDim, fontWeight = FontWeight.Black)
+        Text(value, fontSize = 12.sp, color = Color.White, fontWeight = FontWeight.Bold)
     }
 }

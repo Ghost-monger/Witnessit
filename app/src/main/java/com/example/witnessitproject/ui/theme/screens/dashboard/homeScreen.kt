@@ -3,6 +3,7 @@ package com.example.witnessitproject.ui.theme.screens.dashboard
 import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -24,19 +25,22 @@ import androidx.navigation.NavController
 import com.example.witnessitproject.data.ReportViewModel
 import com.example.witnessitproject.ui.theme.models.ReportModel
 import com.example.witnessitproject.ui.theme.navigation.*
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import java.util.*
 
-// ── WitnessIt Tech Palette ───────────────────────────
-private val DarkBg      = Color(0xFF05070A)
-private val Surface     = Color(0xFF0D1321)
-private val CardBg      = Color(0xFF0D1321)
-private val Border      = Color(0xFF1E2D5A)
-private val Accent      = Color(0xFFFF3D00) // Safety Orange
-private val NeonCyan    = Color(0xFF00E5FF) // Tech Blue
-private val TextPrimary = Color(0xFFF8FAFC)
-private val TextMuted   = Color(0xFF94A3B8)
+// ── WitnessIt Vibrant Palette ───────────────────────────
+private val DeepSpace    = Color(0xFF020617)
+private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
+private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
+
+private val ElectricBlue = Color(0xFF6366F1) // Primary Action/Trust
+private val NeonEmerald  = Color(0xFF10B981) // Safety/Verified
+private val AlertCoral   = Color(0xFFFB7185) // Threat/Danger
+private val MpesaGold    = Color(0xFFF59E0B)
+
+private val TextPrimary  = Color(0xFFF8FAFC)
+private val TextMuted    = Color(0xFF94A3B8)
+private val TextDim      = Color(0xFF64748B)
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -54,11 +58,13 @@ fun HomeScreen(navController: NavController) {
 
     val filteredReports = if (selectedFilter == "All") reports else reports.filter { it.scamType == selectedFilter }
 
-    Box(modifier = Modifier.fillMaxSize().background(DarkBg)) {
-        // --- VISUAL LAYER: Background Glow ---
+    Box(modifier = Modifier.fillMaxSize().background(DeepSpace)) {
+        // --- VISUAL LAYER: Background "Lurking" Glow ---
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
-                brush = Brush.radialGradient(listOf(NeonCyan.copy(0.06f), Color.Transparent)),
+                brush = Brush.radialGradient(
+                    colors = listOf(ElectricBlue.copy(alpha = 0.07f), Color.Transparent)
+                ),
                 center = Offset(size.width * 0.8f, size.height * 0.2f),
                 radius = 1000f
             )
@@ -69,11 +75,12 @@ fun HomeScreen(navController: NavController) {
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = { navController.navigate(ROUTE_NEW_REPORT) },
-                    containerColor = Accent,
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp)
+                    containerColor = AlertCoral,
+                    contentColor = Color.White,
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 12.dp)
                 ) {
-                    Icon(Icons.Default.Add, "New", tint = Color.White, modifier = Modifier.size(28.dp))
+                    Icon(Icons.Default.Add, "New Report", modifier = Modifier.size(30.dp))
                 }
             },
 
@@ -82,62 +89,84 @@ fun HomeScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 20.dp)
             ) {
                 // ── HEADER ──
-                Spacer(Modifier.height(16.dp))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Spacer(Modifier.height(20.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Column {
                         Text(
                             "WITNESS IT",
                             style = TextStyle(
-                                fontSize = 26.sp,
+                                fontSize = 28.sp,
                                 fontWeight = FontWeight.Black,
                                 color = TextPrimary,
-                                letterSpacing = 2.sp,
-                                shadow = Shadow(color = NeonCyan.copy(0.4f), blurRadius = 15f)
+                                letterSpacing = 1.5.sp,
+                                shadow = Shadow(color = ElectricBlue.copy(0.4f), blurRadius = 15f)
                             )
                         )
-                        Text("LIVE THREAT FEED", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = NeonCyan, letterSpacing = 1.sp)
+                        Text(
+                            "LIVE THREAT FEED",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = ElectricBlue,
+                            letterSpacing = 1.5.sp
+                        )
                     }
 
                     Box {
-                        IconButton(onClick = { showMenu = true }) {
-                            Icon(Icons.Default.AccountCircle, null, tint = TextMuted, modifier = Modifier.size(30.dp))
+                        IconButton(
+                            onClick = { showMenu = true },
+                            modifier = Modifier
+                                .background(CardGlass, CircleShape)
+                                .border(1.dp, BorderGlass, CircleShape)
+                        ) {
+                            Icon(Icons.Default.AccountCircle, null, tint = Color.White, modifier = Modifier.size(30.dp))
                         }
-                        DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }, modifier = Modifier.background(Surface)) {
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false },
+                            modifier = Modifier.background(CardGlass).border(1.dp, BorderGlass)
+                        ) {
                             DropdownMenuItem(
                                 text = { Text("LOGOUT", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold) },
                                 onClick = {
                                     FirebaseAuth.getInstance().signOut()
                                     navController.navigate(ROUTE_LOGIN) { popUpTo(0) { inclusive = true } }
                                 },
-                                leadingIcon = { Icon(Icons.Default.ExitToApp, null, tint = Accent) }
+                                leadingIcon = { Icon(Icons.Default.ExitToApp, null, tint = AlertCoral) }
                             )
                         }
                     }
                 }
 
-                Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(24.dp))
 
                 // ── SEARCH INTAKE ──
                 Surface(
-                    modifier = Modifier.fillMaxWidth().height(52.dp).clickable { navController.navigate(ROUTE_SEARCH) },
-                    shape = RoundedCornerShape(14.dp),
-                    color = Surface,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Border)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .clickable { navController.navigate(ROUTE_SEARCH) },
+                    shape = RoundedCornerShape(18.dp),
+                    color = CardGlass,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, BorderGlass)
                 ) {
-                    Row(modifier = Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Search, null, tint = NeonCyan, modifier = Modifier.size(20.dp))
-                        Spacer(Modifier.width(12.dp))
-                        Text("SEARCH FOR THREATS...", color = TextMuted, fontSize = 14.sp)
+                    Row(modifier = Modifier.padding(horizontal = 18.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Search, null, tint = ElectricBlue, modifier = Modifier.size(22.dp))
+                        Spacer(Modifier.width(14.dp))
+                        Text("SCAN DATABASE FOR THREATS...", color = TextDim, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                     }
                 }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(20.dp))
 
                 // ── FILTERS ──
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(filters) { filter ->
                         val isSelected = selectedFilter == filter
                         FilterChip(
@@ -146,45 +175,45 @@ fun HomeScreen(navController: NavController) {
                             onClick = { selectedFilter = filter },
                             label = {
                                 Text(
-                                    text = filter,
-                                    fontSize = 11.sp,
+                                    text = filter.uppercase(),
+                                    fontSize = 10.sp,
                                     fontWeight = FontWeight.Black
                                 )
                             },
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(12.dp),
                             colors = FilterChipDefaults.filterChipColors(
-                                containerColor = CardBg,
+                                containerColor = CardGlass,
                                 labelColor = TextMuted,
-                                selectedContainerColor = Accent,
+                                selectedContainerColor = ElectricBlue,
                                 selectedLabelColor = Color.White
                             ),
                             border = FilterChipDefaults.filterChipBorder(
                                 enabled = true,
                                 selected = isSelected,
-                                borderColor = Border,
-                                selectedBorderColor = Accent,
-                                borderWidth = 1.dp,
-                                selectedBorderWidth = 1.dp
+                                borderColor = BorderGlass,
+                                selectedBorderColor = ElectricBlue,
+                                borderWidth = 1.dp
                             )
                         )
                     }
                 }
 
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(16.dp))
 
                 // ── FEED ──
                 if (filteredReports.isEmpty()) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(Modifier.fillMaxSize().padding(bottom = 80.dp), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("🛡️", fontSize = 50.sp)
-                            Text("DATABASE CLEAR", color = TextPrimary, fontWeight = FontWeight.Black)
-                            Text("No threats logged in this category.", color = TextMuted, fontSize = 12.sp)
+                            Text("🛡️", fontSize = 60.sp)
+                            Spacer(Modifier.height(12.dp))
+                            Text("DATABASE CLEAR", color = TextPrimary, fontWeight = FontWeight.Black, fontSize = 18.sp)
+                            Text("No threats logged in this category.", color = TextDim, fontSize = 13.sp)
                         }
                     }
                 } else {
                     LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        contentPadding = PaddingValues(bottom = 20.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 100.dp)
                     ) {
                         items(filteredReports) { report ->
                             ReportCard(report, context, viewModel) {
@@ -201,47 +230,62 @@ fun HomeScreen(navController: NavController) {
 @Composable
 fun ReportCard(report: ReportModel, context: Context, viewModel: ReportViewModel, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Surface),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Border)
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = CardGlass),
+        border = androidx.compose.foundation.BorderStroke(1.dp, BorderGlass)
     ) {
-        Column(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(20.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 ScamTypeBadge(report.scamType)
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    color = if (report.verified) Color(0xFF22C55E).copy(0.1f) else Color.White.copy(0.05f)
+                    shape = RoundedCornerShape(8.dp),
+                    color = if (report.verified) NeonEmerald.copy(0.15f) else Color.White.copy(0.05f),
+                    border = if (report.verified) androidx.compose.foundation.BorderStroke(1.dp, NeonEmerald.copy(0.3f)) else null
                 ) {
-                    Text(
-                        if (report.verified) "VERIFIED THREAT" else "UNVERIFIED",
-                        color = if (report.verified) Color(0xFF22C55E) else TextMuted,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Black,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
+                        if (report.verified) {
+                            Icon(Icons.Default.CheckCircle, null, tint = NeonEmerald, modifier = Modifier.size(12.dp))
+                            Spacer(Modifier.width(4.dp))
+                        }
+                        Text(
+                            if (report.verified) "VERIFIED THREAT" else "UNVERIFIED",
+                            color = if (report.verified) NeonEmerald else TextDim,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Black
+                        )
+                    }
                 }
             }
 
-            Spacer(Modifier.height(10.dp))
-            Text(report.target, color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Black)
-            Text(report.description, color = TextMuted, fontSize = 13.sp, maxLines = 2, lineHeight = 18.sp)
+            Spacer(Modifier.height(14.dp))
+            Text(report.target, color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.ExtraBold)
+            Text(
+                report.description,
+                color = TextMuted,
+                fontSize = 14.sp,
+                maxLines = 2,
+                lineHeight = 20.sp,
+                modifier = Modifier.padding(top = 4.dp)
+            )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Row(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Accent.copy(0.1f))
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(AlertCoral.copy(0.12f))
                         .clickable { viewModel.upvoteReport(report.reportId, context) }
-                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Warning, null, tint = Accent, modifier = Modifier.size(14.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text("${report.upvotes} FLAGS", color = Accent, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.Warning, null, tint = AlertCoral, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("${report.upvotes} FLAGS", color = AlertCoral, fontSize = 12.sp, fontWeight = FontWeight.Black)
                 }
-                Text(formatTimestamp(report.timestamp), color = TextMuted, fontSize = 10.sp, fontWeight = FontWeight.Medium)
+                Text(formatTimestamp(report.timestamp), color = TextDim, fontSize = 11.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -250,20 +294,34 @@ fun ReportCard(report: ReportModel, context: Context, viewModel: ReportViewModel
 @Composable
 fun ScamTypeBadge(type: String) {
     val color = when (type) {
-        "M-Pesa" -> Color(0xFFF59E0B)
-        "Phone" -> Accent
-        "Website" -> NeonCyan
-        "Email" -> Color(0xFF22C55E)
+        "M-Pesa" -> MpesaGold
+        "Phone" -> AlertCoral
+        "Website" -> ElectricBlue
+        "Email" -> Color(0xFF818CF8)
         else -> TextMuted
     }
-    Surface(shape = RoundedCornerShape(8.dp), color = color.copy(alpha = 0.15f), border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(0.3f))) {
-        Text(type.uppercase(), color = color, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp), fontSize = 10.sp, fontWeight = FontWeight.Black)
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = color.copy(alpha = 0.12f),
+        border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(0.4f))
+    ) {
+        Text(
+            type.uppercase(),
+            color = color,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Black
+        )
     }
 }
 
 @Composable
 fun BottomNavBar(navController: NavController) {
-    NavigationBar(containerColor = Surface, tonalElevation = 0.dp) {
+    NavigationBar(
+        containerColor = CardGlass,
+        tonalElevation = 0.dp,
+        modifier = Modifier.border(1.dp, BorderGlass, RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)).clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+    ) {
         val items = listOf(
             Triple("Home", Icons.Default.Home, "dashboard"),
             Triple("Search", Icons.Default.Search, ROUTE_SEARCH),
@@ -272,19 +330,20 @@ fun BottomNavBar(navController: NavController) {
         )
         items.forEach { (label, icon, route) ->
             NavigationBarItem(
-                selected = false, // Add logic to track current route if needed
+                selected = false,
                 onClick = { navController.navigate(route) },
                 icon = { Icon(icon, null) },
                 label = { Text(label, fontSize = 10.sp, fontWeight = FontWeight.Bold) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = NeonCyan,
-                    unselectedIconColor = TextMuted,
-                    indicatorColor = NeonCyan.copy(0.1f)
+                    selectedIconColor = ElectricBlue,
+                    unselectedIconColor = TextDim,
+                    indicatorColor = ElectricBlue.copy(0.1f)
                 )
             )
         }
     }
 }
+
 @Composable
 fun formatTimestamp(timestamp: com.google.firebase.Timestamp?): String {
     if (timestamp == null) return "JUST NOW"

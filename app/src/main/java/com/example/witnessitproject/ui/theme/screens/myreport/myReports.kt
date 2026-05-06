@@ -2,9 +2,11 @@ package com.example.witnessitproject.ui.theme.screens.myreport
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -24,16 +26,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.witnessitproject.data.ReportViewModel
+import com.example.witnessitproject.ui.theme.navigation.ROUTE_NEW_REPORT
 import com.example.witnessitproject.ui.theme.screens.dashboard.ReportCard
 
-// ── Enhanced WitnessIt Tech Theme ───────────────────────────
-private val DarkBg      = Color(0xFF05070A)
-private val CardBg      = Color(0xFF0D1321)
-private val Border      = Color(0xFF1E2D5A)
-private val Accent      = Color(0xFFFF3D00) // Safety Orange/Red
-private val NeonCyan    = Color(0xFF00E5FF)
+// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+private val DeepSpace    = Color(0xFF020617)
+private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
+private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
+
+private val ElectricBlue = Color(0xFF6366F1) // Primary Action/Trust
+private val NeonEmerald  = Color(0xFF10B981) // Safety/Verified
+private val AlertCoral   = Color(0xFFFB7185) // Threat/Danger
+
+private val TextPrimary  = Color(0xFFF8FAFC)
 private val TextMuted   = Color(0xFF94A3B8)
-private val TextDim     = Color(0xFF475569)
+private val TextDim     = Color(0xFF64748B)
 
 @Composable
 fun MyReportsScreen(navController: NavController) {
@@ -48,14 +55,14 @@ fun MyReportsScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBg)
+            .background(DeepSpace)
     ) {
         // --- VISUAL LAYER: Background Tech Glow ---
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(NeonCyan.copy(alpha = 0.08f), Color.Transparent),
-                    center = Offset(size.width * 0.1f, size.height * 0.2f),
+                    colors = listOf(ElectricBlue.copy(alpha = 0.08f), Color.Transparent),
+                    center = Offset(size.width * 0.9f, size.height * 0.1f),
                     radius = 800f
                 )
             )
@@ -63,7 +70,7 @@ fun MyReportsScreen(navController: NavController) {
 
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // ── Top Bar (Tech Styled) ───────────────────────────
+            // ── Top Bar ───────────────────────────────────
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -73,24 +80,28 @@ fun MyReportsScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier.background(CardGlass, CircleShape).border(1.dp, BorderGlass, CircleShape)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = NeonCyan
+                            tint = ElectricBlue
                         )
                     }
+                    Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
-                            text = "DATA LOGS",
+                            text = "DATA ARCHIVE",
                             fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = NeonCyan,
+                            fontWeight = FontWeight.Black,
+                            color = ElectricBlue,
                             letterSpacing = 2.sp
                         )
                         Text(
                             text = "My Reports",
-                            fontSize = 20.sp,
+                            fontSize = 22.sp,
                             fontWeight = FontWeight.Black,
                             color = Color.White
                         )
@@ -99,22 +110,22 @@ fun MyReportsScreen(navController: NavController) {
 
                 if (myReports.isNotEmpty()) {
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = Accent.copy(alpha = 0.15f),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Accent.copy(alpha = 0.3f))
+                        shape = RoundedCornerShape(10.dp),
+                        color = AlertCoral.copy(alpha = 0.15f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, AlertCoral.copy(alpha = 0.3f))
                     ) {
                         Text(
                             text = "${myReports.size} ENTRIES",
                             fontSize = 10.sp,
-                            color = Accent,
+                            color = AlertCoral,
                             fontWeight = FontWeight.Black,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                         )
                     }
                 }
             }
 
-            // ── Stats Row (Telemetry Style) ──────────────────────
+            // ── Telemetry Stats ──────────────────────────────
             if (myReports.isNotEmpty()) {
                 Row(
                     modifier = Modifier
@@ -125,25 +136,25 @@ fun MyReportsScreen(navController: NavController) {
                     StatCard(
                         modifier = Modifier.weight(1f),
                         value = "${myReports.size}",
-                        label = "SUBMITTED",
-                        glowColor = NeonCyan
+                        label = "LOGGED",
+                        glowColor = ElectricBlue
                     )
                     StatCard(
                         modifier = Modifier.weight(1f),
                         value = "${myReports.sumOf { it.upvotes }}",
                         label = "FLAGS",
-                        glowColor = Accent
+                        glowColor = AlertCoral
                     )
                     StatCard(
                         modifier = Modifier.weight(1f),
                         value = "${myReports.count { it.verified }}",
                         label = "VERIFIED",
-                        glowColor = Color.Green
+                        glowColor = NeonEmerald
                     )
                 }
             }
 
-            // ── Reports List / Empty State ────────────────
+            // ── Reports List ───────────────────────────────
             when {
                 myReports.isEmpty() -> {
                     Box(
@@ -152,12 +163,12 @@ fun MyReportsScreen(navController: NavController) {
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
                             modifier = Modifier.padding(32.dp)
                         ) {
-                            Text("📡", fontSize = 56.sp)
+                            Text("📡", fontSize = 64.sp)
                             Text(
-                                text = "NO DATA FOUND",
+                                text = "LOGS EMPTY",
                                 style = TextStyle(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Black,
@@ -166,19 +177,20 @@ fun MyReportsScreen(navController: NavController) {
                                 )
                             )
                             Text(
-                                text = "Your intelligence log is empty. Search for reports and report suspicious activity to secure the network.",
-                                fontSize = 12.sp,
+                                text = "Your personal threat intelligence log is empty. Secure the community by reporting suspicious activity.",
+                                fontSize = 13.sp,
                                 color = TextMuted,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                lineHeight = 18.sp
+                                lineHeight = 20.sp
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(
-                                onClick = { navController.navigate("new_report") },
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Accent)
+                                onClick = { navController.navigate(ROUTE_NEW_REPORT) },
+                                shape = RoundedCornerShape(16.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = AlertCoral),
+                                modifier = Modifier.height(50.dp).fillMaxWidth(0.7f)
                             ) {
-                                Text("SUBMIT REPORT", fontWeight = FontWeight.Bold)
+                                Text("SUBMIT INTEL", fontWeight = FontWeight.Black, letterSpacing = 1.sp)
                             }
                         }
                     }
@@ -189,8 +201,8 @@ fun MyReportsScreen(navController: NavController) {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        contentPadding = PaddingValues(bottom = 24.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(top = 8.dp, bottom = 40.dp)
                     ) {
                         items(
                             items = myReports,
@@ -221,32 +233,32 @@ fun StatCard(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = CardBg),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Border)
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = CardGlass),
+        border = androidx.compose.foundation.BorderStroke(1.dp, BorderGlass)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = value,
                 style = TextStyle(
-                    fontSize = 24.sp,
+                    fontSize = 26.sp,
                     fontWeight = FontWeight.Black,
                     color = glowColor,
-                    shadow = Shadow(color = glowColor.copy(alpha = 0.5f), blurRadius = 10f)
+                    shadow = Shadow(color = glowColor.copy(alpha = 0.5f), blurRadius = 12f)
                 )
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = label,
-                fontSize = 9.sp,
-                fontWeight = FontWeight.ExtraBold,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Black,
                 color = TextDim,
-                letterSpacing = 1.sp,
+                letterSpacing = 1.5.sp,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
         }
