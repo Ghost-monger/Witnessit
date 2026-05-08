@@ -29,14 +29,14 @@ import com.example.witnessitproject.ui.theme.navigation.ROUTE_AUTHORITY
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_LOGIN
 import com.google.firebase.auth.FirebaseAuth
 
-// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+
 private val DeepSpace    = Color(0xFF020617)
 private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
 private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
-private val ElectricBlue = Color(0xFF6366F1) // Primary
-private val NeonEmerald  = Color(0xFF10B981) // Approve
-private val AlertCoral   = Color(0xFFFB7185) // Reject/Logout
+private val ElectricBlue = Color(0xFF6366F1)
+private val NeonEmerald  = Color(0xFF10B981)
+private val AlertCoral   = Color(0xFFFB7185)
 
 private val TextMuted    = Color(0xFF94A3B8)
 
@@ -57,7 +57,7 @@ fun AdminScreen(navController: NavController) {
             .background(DeepSpace)
     ) {
 
-        // ── Top Bar ──────────────────────────────────
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -95,7 +95,7 @@ fun AdminScreen(navController: NavController) {
             }
         }
 
-        // ── Quick Actions ─────────────────────────────
+
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -131,7 +131,7 @@ fun AdminScreen(navController: NavController) {
 
         Spacer(Modifier.height(20.dp))
 
-        // ── Pending Reports List ──────────────────────
+
         if (pendingReports.isEmpty()) {
             EmptyState()
         } else {

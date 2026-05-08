@@ -29,14 +29,14 @@ import com.example.witnessitproject.data.ReportViewModel
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_NEW_REPORT
 import com.example.witnessitproject.ui.theme.screens.dashboard.ReportCard
 
-// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+
 private val DeepSpace    = Color(0xFF020617)
 private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
 private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
-private val ElectricBlue = Color(0xFF6366F1) // Primary Action/Trust
-private val NeonEmerald  = Color(0xFF10B981) // Safety/Verified
-private val AlertCoral   = Color(0xFFFB7185) // Threat/Danger
+private val ElectricBlue = Color(0xFF6366F1)
+private val NeonEmerald  = Color(0xFF10B981)
+private val AlertCoral   = Color(0xFFFB7185)
 
 private val TextPrimary  = Color(0xFFF8FAFC)
 private val TextMuted   = Color(0xFF94A3B8)
@@ -57,7 +57,7 @@ fun MyReportsScreen(navController: NavController) {
             .fillMaxSize()
             .background(DeepSpace)
     ) {
-        // --- VISUAL LAYER: Background Tech Glow ---
+
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 brush = Brush.radialGradient(
@@ -70,7 +70,7 @@ fun MyReportsScreen(navController: NavController) {
 
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // ── Top Bar ───────────────────────────────────
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -125,7 +125,7 @@ fun MyReportsScreen(navController: NavController) {
                 }
             }
 
-            // ── Telemetry Stats ──────────────────────────────
+
             if (myReports.isNotEmpty()) {
                 Row(
                     modifier = Modifier
@@ -154,7 +154,7 @@ fun MyReportsScreen(navController: NavController) {
                 }
             }
 
-            // ── Reports List ───────────────────────────────
+
             when {
                 myReports.isEmpty() -> {
                     Box(

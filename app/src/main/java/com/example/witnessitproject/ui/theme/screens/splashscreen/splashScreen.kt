@@ -29,22 +29,22 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 
-// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+
 private val DeepSpace    = Color(0xFF020617)
 private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
-private val ElectricBlue = Color(0xFF6366F1) // Primary Action/Trust
-private val AlertCoral   = Color(0xFFFB7185) // Threat/Danger
+private val ElectricBlue = Color(0xFF6366F1)
+private val AlertCoral   = Color(0xFFFB7185)
 private val TextMuted   = Color(0xFF94A3B8)
 
 @Composable
 fun SplashScreen(navController: NavController) {
 
-    // Animations
+
     val scale = remember { Animatable(0.6f) }
     val alpha = remember { Animatable(0f) }
     val textAlpha = remember { Animatable(0f) }
 
-    // Pulsing glow animation
+
     val infiniteTransition = rememberInfiniteTransition(label = "glow")
     val pulseScale by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -56,7 +56,7 @@ fun SplashScreen(navController: NavController) {
     )
 
     LaunchedEffect(Unit) {
-        // Pop-in effect
+
         scale.animateTo(
             targetValue = 1f,
             animationSpec = spring(
@@ -68,9 +68,9 @@ fun SplashScreen(navController: NavController) {
         alpha.animateTo(targetValue = 1f, animationSpec = tween(800))
         textAlpha.animateTo(targetValue = 1f, animationSpec = tween(1000))
 
-        delay(2500L) // Boot-up delay
+        delay(2500L)
 
-        // ✅ Only addition — check Firebase auth state before navigating
+
         val currentUser = FirebaseAuth.getInstance().currentUser
         when {
             currentUser == null -> {
@@ -97,7 +97,7 @@ fun SplashScreen(navController: NavController) {
             .background(DeepSpace),
         contentAlignment = Alignment.Center
     ) {
-        // --- VISUAL LAYER: Background Core Pulse ---
+
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 brush = Brush.radialGradient(
@@ -112,9 +112,9 @@ fun SplashScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Shield Icon with pulsing outer ring
+
             Box(contentAlignment = Alignment.Center) {
-                // Animated outer glow ring (Coral Pulse)
+
                 Box(
                     modifier = Modifier
                         .size(130.dp)
@@ -123,7 +123,7 @@ fun SplashScreen(navController: NavController) {
                         .background(AlertCoral.copy(alpha = 0.3f), CircleShape)
                 )
 
-                // Main Shield Icon Container
+
                 Box(
                     modifier = Modifier
                         .scale(scale.value)
@@ -141,7 +141,7 @@ fun SplashScreen(navController: NavController) {
 
             Spacer(Modifier.height(32.dp))
 
-            // App Name with Cyber Shadow
+
             Text(
                 text = "WITNESS IT",
                 style = TextStyle(
@@ -156,7 +156,7 @@ fun SplashScreen(navController: NavController) {
 
             Spacer(Modifier.height(8.dp))
 
-            // Tech Sub-header
+
             Text(
                 text = "VIGILANT COMMUNITY NETWORK",
                 fontSize = 11.sp,
@@ -168,7 +168,7 @@ fun SplashScreen(navController: NavController) {
 
             Spacer(Modifier.height(64.dp))
 
-            // Loading Bar (Tech Style)
+
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 LinearProgressIndicator(
                     modifier = Modifier
@@ -190,7 +190,7 @@ fun SplashScreen(navController: NavController) {
             }
         }
 
-        // Footer Metadata
+
         Text(
             text = "VERIFIED ACCESS // KORE DATA SYNC",
             fontSize = 9.sp,

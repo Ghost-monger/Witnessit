@@ -31,14 +31,14 @@ import com.example.witnessitproject.data.ReportViewModel
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_NEW_REPORT
 import com.example.witnessitproject.ui.theme.screens.dashboard.ReportCard
 
-// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+
 private val DeepSpace    = Color(0xFF020617)
 private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
 private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
-private val ElectricBlue = Color(0xFF6366F1) // Primary Action/Trust
-private val NeonEmerald  = Color(0xFF10B981) // Safety/Verified
-private val AlertCoral   = Color(0xFFFB7185) // Threat/Danger
+private val ElectricBlue = Color(0xFF6366F1)
+private val NeonEmerald  = Color(0xFF10B981)
+private val AlertCoral   = Color(0xFFFB7185)
 
 private val TextPrimary  = Color(0xFFF8FAFC)
 private val TextMuted    = Color(0xFF94A3B8)
@@ -74,7 +74,7 @@ fun SearchScreen(navController: NavController) {
             .fillMaxSize()
             .background(DeepSpace)
     ) {
-        // --- VISUAL LAYER: Background Scan Glow ---
+
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 brush = Brush.radialGradient(
@@ -87,7 +87,7 @@ fun SearchScreen(navController: NavController) {
 
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // ── Top Bar / Search Input ──────────────────────
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -127,7 +127,7 @@ fun SearchScreen(navController: NavController) {
                 )
             }
 
-            // ── Intelligence Filters ────────────────────────
+
             androidx.compose.foundation.lazy.LazyRow(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -163,7 +163,7 @@ fun SearchScreen(navController: NavController) {
                 }
             }
 
-            // ── Results Counter ─────────────────────────────
+
             if (query.isNotBlank() || selectedFilter != "All") {
                 Text(
                     text = "${searchResults.size} MATCHES IN LOCAL REGISTRY",
@@ -175,7 +175,7 @@ fun SearchScreen(navController: NavController) {
                 )
             }
 
-            // ── Search States ────────────────────
+
             when {
                 query.isBlank() && selectedFilter == "All" -> {
                     SearchPrompt(

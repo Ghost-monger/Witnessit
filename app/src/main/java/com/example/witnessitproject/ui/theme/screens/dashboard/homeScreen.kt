@@ -28,14 +28,14 @@ import com.example.witnessitproject.ui.theme.navigation.*
 import com.google.firebase.auth.FirebaseAuth
 import java.util.*
 
-// ── WitnessIt Vibrant Palette ───────────────────────────
+
 private val DeepSpace    = Color(0xFF020617)
 private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
 private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
-private val ElectricBlue = Color(0xFF6366F1) // Primary Action/Trust
-private val NeonEmerald  = Color(0xFF10B981) // Safety/Verified
-private val AlertCoral   = Color(0xFFFB7185) // Threat/Danger
+private val ElectricBlue = Color(0xFF6366F1)
+private val NeonEmerald  = Color(0xFF10B981)
+private val AlertCoral   = Color(0xFFFB7185)
 private val MpesaGold    = Color(0xFFF59E0B)
 
 private val TextPrimary  = Color(0xFFF8FAFC)
@@ -62,7 +62,7 @@ fun HomeScreen(navController: NavController) {
     val filteredReports = if (selectedFilter == "All") reports else reports.filter { it.scamType == selectedFilter }
 
     Box(modifier = Modifier.fillMaxSize().background(DeepSpace)) {
-        // --- VISUAL LAYER: Background "Lurking" Glow ---
+
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 brush = Brush.radialGradient(
@@ -94,7 +94,7 @@ fun HomeScreen(navController: NavController) {
                     .padding(padding)
                     .padding(horizontal = 20.dp)
             ) {
-                // ── HEADER ──
+
                 Spacer(Modifier.height(20.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -149,7 +149,7 @@ fun HomeScreen(navController: NavController) {
 
                 Spacer(Modifier.height(24.dp))
 
-                // ── SEARCH INTAKE ──
+
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -168,7 +168,7 @@ fun HomeScreen(navController: NavController) {
 
                 Spacer(Modifier.height(20.dp))
 
-                // ── FILTERS ──
+
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(filters) { filter ->
                         val isSelected = selectedFilter == filter
@@ -203,7 +203,7 @@ fun HomeScreen(navController: NavController) {
 
                 Spacer(Modifier.height(16.dp))
 
-                // ── FEED ──
+
                 if (filteredReports.isEmpty()) {
                     Box(Modifier.fillMaxSize().padding(bottom = 80.dp), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -281,7 +281,7 @@ fun ReportCard(report: ReportModel, context: Context, viewModel: ReportViewModel
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
                         .background(
-                            if (isUpvoted) AlertCoral.copy(0.3f)  // ✅ darker when flagged
+                            if (isUpvoted) AlertCoral.copy(0.3f)
                             else AlertCoral.copy(0.12f)
                         )
                         .clickable { viewModel.upvoteReport(report.reportId, context) }

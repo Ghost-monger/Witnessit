@@ -24,7 +24,7 @@ import com.example.witnessitproject.ui.theme.screens.register.RegisterScreen
 import com.example.witnessitproject.ui.theme.screens.search.SearchScreen
 import com.example.witnessitproject.ui.theme.screens.splashscreen.SplashScreen
 
-// Screens where bottom bar should NOT show
+
 val noBottomBarRoutes = listOf(
     ROUTE_SPLASH_SCREEN,
     ROUTE_LOGIN,
@@ -41,7 +41,7 @@ fun AppNavHost(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Hide bottom bar on auth screens and admin
+
     val showBottomBar = currentRoute != null &&
             noBottomBarRoutes.none { currentRoute.startsWith(it) }
 

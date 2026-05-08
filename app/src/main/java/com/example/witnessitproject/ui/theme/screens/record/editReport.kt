@@ -34,13 +34,13 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.witnessitproject.data.ReportViewModel
 
-// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+
 private val DeepSpace    = Color(0xFF020617)
 private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
 private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
-private val ElectricBlue = Color(0xFF6366F1) // Primary Action
-private val AlertCoral   = Color(0xFFFB7185) // Update Action
+private val ElectricBlue = Color(0xFF6366F1)
+private val AlertCoral   = Color(0xFFFB7185)
 private val TextMuted   = Color(0xFF94A3B8)
 private val TextDim     = Color(0xFF475569)
 
@@ -87,7 +87,7 @@ fun EditReportScreen(
 
     Column(modifier = Modifier.fillMaxSize().background(DeepSpace)) {
 
-        // ── Top Bar ──────────────────────────────────
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -131,7 +131,7 @@ fun EditReportScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
 
-            // ── Category ───────────────────────
+
             Column {
                 SectionLabel("INCIDENT CATEGORY")
                 LazyRow(
@@ -163,7 +163,7 @@ fun EditReportScreen(
                 }
             }
 
-            // ── Target ──────────────────────────
+
             Column {
                 SectionLabel("TARGET IDENTIFIER")
                 OutlinedTextField(
@@ -182,7 +182,7 @@ fun EditReportScreen(
                 )
             }
 
-            // ── Description ─────────────────────
+
             Column {
                 SectionLabel("INTEL DETAILS")
                 OutlinedTextField(
@@ -201,7 +201,7 @@ fun EditReportScreen(
                 )
             }
 
-            // ── Evidence ──────────────────────
+
             val totalImages = existingUrls.size + newImages.size
             Column {
                 SectionLabel("EVIDENCE ATTACHMENTS ($totalImages/5)")
@@ -223,14 +223,14 @@ fun EditReportScreen(
                         }
                     }
 
-                    // Existing
+
                     items(existingUrls) { url ->
                         EvidenceBox(model = url, isNew = false) {
                             existingUrls = existingUrls.filter { it != url }
                         }
                     }
 
-                    // New
+
                     items(newImages) { uri ->
                         EvidenceBox(model = uri, isNew = true) {
                             newImages = newImages.filter { it != uri }
@@ -239,7 +239,7 @@ fun EditReportScreen(
                 }
             }
 
-            // ── Save button ───────────────────────────
+
             Button(
                 onClick = {
                     if (target.isNotBlank() && description.isNotBlank()) {

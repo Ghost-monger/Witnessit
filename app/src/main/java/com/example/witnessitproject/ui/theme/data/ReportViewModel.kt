@@ -41,7 +41,7 @@ class ReportViewModel : ViewModel() {
     private val _myReports = mutableStateListOf<ReportModel>()
     val myReports: List<ReportModel> = _myReports
 
-    // Prevents double-tap race condition on upvote
+
     private val _processingUpvotes = mutableSetOf<String>()
 
 
@@ -83,7 +83,7 @@ class ReportViewModel : ViewModel() {
                     "status" to "pending"
                 )
 
-                // Save to Firestore using callbacks — no await needed
+
                 withContext(Dispatchers.Main) {
                     firestore.collection("reports")
                         .add(report)
@@ -116,10 +116,10 @@ class ReportViewModel : ViewModel() {
         }
     }
 
-    // Fetch all reports for home feed
+
     fun fetchReports(context: Context) {
         firestore.collection("reports")
-            .whereEqualTo("status", "approved") // ✅ only approved reports
+            .whereEqualTo("status", "approved")
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { snapshot ->
@@ -137,11 +137,11 @@ class ReportViewModel : ViewModel() {
             }
     }
 
-    // Fetch only current user's reports
+
     fun fetchMyReports(context: Context) {
         val userId = auth.currentUser?.uid
 
-        // Temporary debug — shows what userId is being used
+
         Toast.makeText(context, "Fetching reports for: $userId", Toast.LENGTH_LONG).show()
 
         if (userId == null) {
@@ -154,7 +154,7 @@ class ReportViewModel : ViewModel() {
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { snapshot ->
-                // Temporary debug — shows how many docs were found
+
                 Toast.makeText(context, "Found ${snapshot.documents.size} reports", Toast.LENGTH_LONG).show()
                 _myReports.clear()
                 for (doc in snapshot.documents) {
@@ -175,11 +175,11 @@ class ReportViewModel : ViewModel() {
             }
     }
 
-    // Upvote toggle — no await, pure callbacks
+
     fun upvoteReport(reportId: String, context: Context) {
         val userId = auth.currentUser?.uid ?: return
 
-        // Prevent double-tap race condition with a local lock
+
         if (_processingUpvotes.contains(reportId)) return
         _processingUpvotes.add(reportId)
 
@@ -187,19 +187,19 @@ class ReportViewModel : ViewModel() {
             .collection("reports")
             .document(reportId)
             .collection("upvotes")
-            .document(userId) // one document per user — natural dedup
+            .document(userId)
 
         upvoteRef.get()
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
-                    // ── Toggle OFF ──────────────────────────
+
                     upvoteRef.delete()
                         .addOnSuccessListener {
                             firestore.collection("reports")
                                 .document(reportId)
                                 .update("upvotes", FieldValue.increment(-1))
                                 .addOnSuccessListener {
-                                    // Update local state immediately
+
                                     updateLocalUpvoteCount(reportId, -1)
                                     _upvotedReportIds.remove(reportId)
                                     _processingUpvotes.remove(reportId)
@@ -213,7 +213,7 @@ class ReportViewModel : ViewModel() {
                             _processingUpvotes.remove(reportId)
                         }
                 } else {
-                    // ── Toggle ON ───────────────────────────
+
                     upvoteRef.set(
                         mapOf(
                             "userId" to userId,
@@ -225,13 +225,13 @@ class ReportViewModel : ViewModel() {
                                 .document(reportId)
                                 .update("upvotes", FieldValue.increment(1))
                                 .addOnSuccessListener {
-                                    // Update local state immediately
+
                                     updateLocalUpvoteCount(reportId, 1)
                                     _upvotedReportIds.add(reportId)
                                     _processingUpvotes.remove(reportId)
                                 }
                                 .addOnFailureListener {
-                                    // Rollback the upvote doc if count update failed
+
                                     upvoteRef.delete()
                                     _processingUpvotes.remove(reportId)
                                     Toast.makeText(context, "Flag failed", Toast.LENGTH_SHORT).show()
@@ -249,7 +249,7 @@ class ReportViewModel : ViewModel() {
             }
     }
 
-    // Updates upvote count in all local lists simultaneously
+
     private fun updateLocalUpvoteCount(reportId: String, delta: Int) {
         val reportIndex = _reports.indexOfFirst { it.reportId == reportId }
         if (reportIndex != -1) {
@@ -271,7 +271,8 @@ class ReportViewModel : ViewModel() {
         }
     }
 
-    // Delete a report
+
+
     fun deleteReport(reportId: String, context: Context) {
         firestore.collection("reports")
             .document(reportId)
@@ -286,7 +287,7 @@ class ReportViewModel : ViewModel() {
             }
     }
 
-    // Cloudinary upload — runs on IO thread, no await needed
+
     private fun uploadToCloudinary(context: Context, uri: Uri): String {
         val contentResolver = context.contentResolver
         val inputStream: InputStream? = contentResolver.openInputStream(uri)
@@ -329,7 +330,7 @@ class ReportViewModel : ViewModel() {
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Upload any new images to Cloudinary
+
                 val newImageUrls = mutableListOf<String>()
                 imageUris.forEachIndexed { index, uri ->
                     withContext(Dispatchers.Main) {
@@ -343,10 +344,10 @@ class ReportViewModel : ViewModel() {
                     newImageUrls.add(url)
                 }
 
-                // Combine existing URLs + newly uploaded URLs
+
                 val allImageUrls = existingUrls + newImageUrls
 
-                // Build updated fields map
+
                 val updates = mapOf(
                     "scamType" to scamType,
                     "target" to target,
@@ -354,7 +355,7 @@ class ReportViewModel : ViewModel() {
                     "evidenceUrls" to allImageUrls
                 )
 
-                // Update Firestore document
+
                 withContext(Dispatchers.Main) {
                     firestore.collection("reports")
                         .document(reportId)
@@ -387,7 +388,7 @@ class ReportViewModel : ViewModel() {
             }
         }
     }
-    // Fetch all pending reports — for admin dashboard
+
     fun fetchPendingReports(context: Context) {
         firestore.collection("reports")
             .whereEqualTo("status", "pending")
@@ -408,7 +409,7 @@ class ReportViewModel : ViewModel() {
             }
     }
 
-    // Approve a report — makes it visible on home feed
+
     fun approveReport(reportId: String, context: Context) {
         firestore.collection("reports")
             .document(reportId)
@@ -427,7 +428,7 @@ class ReportViewModel : ViewModel() {
             }
     }
 
-    // Reject a report — deletes it entirely
+
     fun rejectReport(reportId: String, context: Context) {
         firestore.collection("reports")
             .document(reportId)
@@ -467,16 +468,16 @@ class ReportViewModel : ViewModel() {
                 ).show()
             }
     }
-    // Tracks which reportIds the current user has upvoted
+
     private val _upvotedReportIds = mutableStateListOf<String>()
     val upvotedReportIds: List<String> = _upvotedReportIds
 
-    // Call this when home screen loads
+
     fun fetchUserUpvotes(context: Context) {
         val userId = auth.currentUser?.uid ?: return
 
-        // Instead of collectionGroup query — check each report individually
-        // This runs silently in background, no index needed
+
+
         firestore.collection("reports")
             .whereEqualTo("status", "approved")
             .get()
@@ -498,7 +499,7 @@ class ReportViewModel : ViewModel() {
                 }
             }
             .addOnFailureListener {
-                // Silently fail — not critical
+
             }
     }
 }

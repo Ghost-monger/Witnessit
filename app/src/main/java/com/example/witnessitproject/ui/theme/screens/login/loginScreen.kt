@@ -37,14 +37,14 @@ import com.example.witnessitproject.R
 import com.example.witnessitproject.ui.theme.data.AuthViewModel
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_REGISTER
 
-// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+
 private val DeepSpace    = Color(0xFF020617)
 private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
 private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
-private val ElectricBlue = Color(0xFF6366F1) // Primary Action
-private val NeonEmerald  = Color(0xFF10B981) // Trust/Safety
-private val AlertCoral   = Color(0xFFFB7185) // Alert/Accent
+private val ElectricBlue = Color(0xFF6366F1)
+private val NeonEmerald  = Color(0xFF10B981)
+private val AlertCoral   = Color(0xFFFB7185)
 
 private val TextMuted    = Color(0xFF94A3B8)
 private val TextDim      = Color(0xFF64748B)
@@ -66,7 +66,7 @@ fun LoginScreen(navController: NavController) {
             .background(DeepSpace),
         contentAlignment = Alignment.Center
     ) {
-        // Vibrant "Lurking" Glow - Radial effect
+
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 brush = Brush.radialGradient(
@@ -84,7 +84,7 @@ fun LoginScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // App icon bubble with Neon Emerald "Safe" glow
+
             Box(
                 modifier = Modifier
                     .size(86.dp)
@@ -125,7 +125,7 @@ fun LoginScreen(navController: NavController) {
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
-            // Glassmorphism Card
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(28.dp),
@@ -137,7 +137,7 @@ fun LoginScreen(navController: NavController) {
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
 
-                    // Email field
+
                     Column {
                         Text(
                             text = "ACCESS IDENTIFIER (EMAIL)",
@@ -170,7 +170,7 @@ fun LoginScreen(navController: NavController) {
                         )
                     }
 
-                    // Password field
+
                     Column {
                         Text(
                             text = "SECURITY KEY (PASSWORD)",
@@ -215,7 +215,7 @@ fun LoginScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Primary Login Button
+
                     Button(
                         onClick = {
                             authViewModel.login(email, password, navController, context)
@@ -237,7 +237,7 @@ fun LoginScreen(navController: NavController) {
                         )
                     }
 
-                    // Divider
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
@@ -247,7 +247,7 @@ fun LoginScreen(navController: NavController) {
                         HorizontalDivider(modifier = Modifier.weight(1f), color = BorderGlass)
                     }
 
-                    // Google Button
+
                     OutlinedButton(
                         onClick = {
                             authViewModel.signInWithGoogle(context, navController, scope)
@@ -274,7 +274,7 @@ fun LoginScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Navigation to Register
+
             Row {
                 Text(
                     text = "Are you new here? ",

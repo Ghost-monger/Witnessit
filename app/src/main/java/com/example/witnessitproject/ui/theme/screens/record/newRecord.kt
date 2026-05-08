@@ -38,13 +38,13 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.witnessitproject.data.ReportViewModel
 
-// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+
 private val DeepSpace    = Color(0xFF020617)
 private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
 private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
-private val ElectricBlue = Color(0xFF6366F1) // Primary Action
-private val AlertCoral   = Color(0xFFFB7185) // Submit/Action
+private val ElectricBlue = Color(0xFF6366F1)
+private val AlertCoral   = Color(0xFFFB7185)
 private val TextMuted   = Color(0xFF94A3B8)
 private val TextDim     = Color(0xFF475569)
 
@@ -73,7 +73,7 @@ fun NewRecordScreen(navController: NavController) {
             .fillMaxSize()
             .background(DeepSpace)
     ) {
-        // --- VISUAL LAYER: Background Tech Glow ---
+
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 brush = Brush.radialGradient(
@@ -91,7 +91,7 @@ fun NewRecordScreen(navController: NavController) {
                 .verticalScroll(scrollState)
                 .padding(20.dp)
         ) {
-            // Header
+
             Text(
                 text = "SUBMIT INTEL",
                 style = TextStyle(
@@ -112,7 +112,6 @@ fun NewRecordScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Incident category selection
             SectionLabel("INCIDENT CATEGORY")
             LazyRow(
                 modifier = Modifier.padding(vertical = 12.dp),
@@ -151,7 +150,7 @@ fun NewRecordScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Target input
+
             SectionLabel("TARGET IDENTIFIER (PHONE / URL)")
             OutlinedTextField(
                 value = target,
@@ -174,7 +173,7 @@ fun NewRecordScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Description input
+
             SectionLabel("INCIDENT DESCRIPTION")
             OutlinedTextField(
                 value = description,
@@ -197,7 +196,7 @@ fun NewRecordScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Evidence attachments
+
             SectionLabel("EVIDENCE ATTACHMENTS (${selectedImages.size}/5)")
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -247,7 +246,7 @@ fun NewRecordScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Submit button
+
             Button(
                 onClick = {
                     if (target.isNotBlank() && description.isNotBlank()) {

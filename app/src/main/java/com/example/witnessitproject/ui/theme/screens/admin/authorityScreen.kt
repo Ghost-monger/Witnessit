@@ -29,14 +29,14 @@ import com.example.witnessitproject.ui.theme.models.ReportModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+
 private val DeepSpace    = Color(0xFF020617)
 private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
 private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
-private val ElectricBlue = Color(0xFF6366F1) // Primary
-private val NeonEmerald  = Color(0xFF10B981) // Success/Forward
-private val AlertCoral   = Color(0xFFFB7185) // Critical Priority
+private val ElectricBlue = Color(0xFF6366F1)
+private val NeonEmerald  = Color(0xFF10B981)
+private val AlertCoral   = Color(0xFFFB7185)
 
 private val TextMuted    = Color(0xFF94A3B8)
 private val TextDim      = Color(0xFF475569)
@@ -57,7 +57,7 @@ fun AuthorityScreen(navController: NavController) {
             .background(DeepSpace)
     ) {
 
-        // ── Top Bar ──────────────────────────────────
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -89,7 +89,7 @@ fun AuthorityScreen(navController: NavController) {
             }
         }
 
-        // ── Critical Info Banner ───────────────────────
+
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -116,7 +116,7 @@ fun AuthorityScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // ── Reports List ──────────────────────────────
+
         if (highPriorityReports.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {

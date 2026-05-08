@@ -36,14 +36,14 @@ import com.example.witnessitproject.ui.theme.navigation.ROUTE_LOGIN
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+
 private val DeepSpace    = Color(0xFF020617)
 private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
 private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
-private val ElectricBlue = Color(0xFF6366F1) // Action/Trust
-private val NeonEmerald  = Color(0xFF10B981) // Safety/Verified
-private val AlertCoral   = Color(0xFFFB7185) // Threat/Danger
+private val ElectricBlue = Color(0xFF6366F1)
+private val NeonEmerald  = Color(0xFF10B981)
+private val AlertCoral   = Color(0xFFFB7185)
 
 private val TextPrimary  = Color(0xFFF8FAFC)
 private val TextMuted    = Color(0xFF94A3B8)
@@ -100,7 +100,7 @@ fun ProfileScreen(navController: NavController) {
             .fillMaxSize()
             .background(DeepSpace)
     ) {
-        // --- VISUAL LAYER: Background "Lurking" Glow ---
+
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 brush = Brush.radialGradient(
@@ -112,7 +112,7 @@ fun ProfileScreen(navController: NavController) {
         }
 
         Column(modifier = Modifier.fillMaxSize()) {
-            // ── Top Bar ──────────────────────────────────
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -151,7 +151,7 @@ fun ProfileScreen(navController: NavController) {
                     .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // ── Avatar Card (Digital ID Style) ─────────────────────────
+
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(28.dp),
@@ -212,7 +212,7 @@ fun ProfileScreen(navController: NavController) {
                     }
                 }
 
-                // ── Stats row (Telemetry Style) ─────────────────────────────
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -222,7 +222,7 @@ fun ProfileScreen(navController: NavController) {
                     StatItem(Modifier.weight(1f), "${reportViewModel.myReports.count { it.verified }}", "VERIFIED", NeonEmerald)
                 }
 
-                // ── Account info ──────────────────────────
+
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
@@ -249,7 +249,7 @@ fun ProfileScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // ── Logout button ─────────────────────────
+
                 Button(
                     onClick = { showLogoutDialog = true },
                     modifier = Modifier.fillMaxWidth().height(56.dp).padding(bottom = 8.dp),

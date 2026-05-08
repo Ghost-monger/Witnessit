@@ -32,18 +32,18 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.witnessitproject.R
 
-// ── WitnessIt Vibrant Theme Colors ─────────────────────
-val DeepSpace    = Color(0xFF020617) // Background
-val ElectricBlue = Color(0xFF6366F1) // Primary Action
-val NeonEmerald  = Color(0xFF10B981) // Safety/Success
-val SoftCoral    = Color(0xFFFB7185) // Danger/Accent
+
+val DeepSpace    = Color(0xFF020617)
+val ElectricBlue = Color(0xFF6366F1)
+val NeonEmerald  = Color(0xFF10B981)
+val SoftCoral    = Color(0xFFFB7185)
 val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
 val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
 private val TextMuted  = Color(0xFF94A3B8)
 private val TextDim    = Color(0xFF64748B)
 
-// ── Register Screen ────────────────────────────────────
+
 @Composable
 fun RegisterScreen(navController: NavController) {
 
@@ -59,11 +59,11 @@ fun RegisterScreen(navController: NavController) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    // Vibrant background with "lurking" color
+
     val backgroundBrush = Brush.verticalGradient(
         colors = listOf(
             DeepSpace,
-            Color(0xFF1E1B4B), // Very deep Indigo "lurk"
+            Color(0xFF1E1B4B),
             DeepSpace
         )
     )
@@ -85,7 +85,7 @@ fun RegisterScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // ── Shield Logo with Glow ────────────────────
+
             Box(
                 modifier = Modifier
                     .size(90.dp)
@@ -94,7 +94,7 @@ fun RegisterScreen(navController: NavController) {
                     .padding(8.dp),
                 contentAlignment = Alignment.Center
             ) {
-                // Use Emerald for safety vibe
+
                 Text("🛡️", fontSize = 42.sp)
             }
 
@@ -114,7 +114,7 @@ fun RegisterScreen(navController: NavController) {
                 modifier = Modifier.padding(top = 4.dp, bottom = 32.dp)
             )
 
-            // ── Glassmorphism Card ─────────────────────
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(28.dp),
@@ -189,7 +189,7 @@ fun RegisterScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // ── Primary Action Button ───────────
+
                     Button(
                         onClick = {
                             authViewModel.signup(username, email, phonenumber, password, confirmpassword, navController, context)
@@ -203,13 +203,13 @@ fun RegisterScreen(navController: NavController) {
                             contentColor = Color.White
                         ),
                         elevation = ButtonDefaults.buttonElevation(
-                            // Adding elevation for that "Vibrant" pop
+
                         )
                     ) {
                         Text("Secure Registration", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
 
-                    // ── Divider ─────────────────────────
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
@@ -219,7 +219,7 @@ fun RegisterScreen(navController: NavController) {
                         HorizontalDivider(modifier = Modifier.weight(1f), color = BorderGlass)
                     }
 
-                    // ── Google Sign-In ──────────────────
+
                     OutlinedButton(
                         onClick = {
                             authViewModel.signInWithGoogle(context, navController, scope)
@@ -242,7 +242,7 @@ fun RegisterScreen(navController: NavController) {
                         }
                     }
 
-                    // ── Login Link ──────────────────────
+
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                         horizontalArrangement = Arrangement.Center
@@ -250,7 +250,7 @@ fun RegisterScreen(navController: NavController) {
                         Text("Already registered? ", color = TextMuted)
                         Text(
                             "Login here",
-                            color = NeonEmerald, // Using safety green as a link color
+                            color = NeonEmerald,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.clickable {
                                 navController.navigate(ROUTE_LOGIN)
@@ -264,7 +264,7 @@ fun RegisterScreen(navController: NavController) {
     }
 }
 
-// ── Vibrant Input Field ────────────────────────────────
+
 @Composable
 fun ParkField(
     label: String,

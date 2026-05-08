@@ -38,14 +38,14 @@ import com.example.witnessitproject.data.ReportViewModel
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_EDIT_REPORT
 import com.google.firebase.auth.FirebaseAuth
 
-// ── Unified WitnessIt Vibrant Theme ───────────────────────────
+
 private val DeepSpace    = Color(0xFF020617)
 private val CardGlass    = Color(0xFF0F172A).copy(alpha = 0.9f)
 private val BorderGlass  = Color(0xFF334155).copy(alpha = 0.5f)
 
-private val ElectricBlue = Color(0xFF6366F1) // Primary Action
-private val NeonEmerald  = Color(0xFF10B981) // Verified Status
-private val AlertCoral   = Color(0xFFFB7185) // Alert/Danger/Delete
+private val ElectricBlue = Color(0xFF6366F1)
+private val NeonEmerald  = Color(0xFF10B981)
+private val AlertCoral   = Color(0xFFFB7185)
 
 private val TextPrimary  = Color(0xFFF8FAFC)
 private val TextMuted    = Color(0xFF94A3B8)
@@ -160,7 +160,7 @@ fun RecordDetailScreen(
         }
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize()) {
-            // Background Glow
+
             Canvas(modifier = Modifier.fillMaxSize()) {
                 drawCircle(
                     brush = Brush.radialGradient(listOf(ElectricBlue.copy(0.06f), Color.Transparent)),
@@ -177,7 +177,7 @@ fun RecordDetailScreen(
                     .padding(horizontal = 20.dp, vertical = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                // ── Status Badges ────────
+
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     StatusBadge(text = report.scamType.uppercase(), color = ElectricBlue)
 
@@ -188,7 +188,7 @@ fun RecordDetailScreen(
                     )
                 }
 
-                // ── Target Card ────────
+
                 DetailCard {
                     Text("IDENTIFIED TARGET", fontSize = 10.sp, color = ElectricBlue, fontWeight = FontWeight.Black, letterSpacing = 1.5.sp)
                     Spacer(modifier = Modifier.height(8.dp))
@@ -203,14 +203,14 @@ fun RecordDetailScreen(
                     )
                 }
 
-                // ── Description Card ────────
+
                 DetailCard(containerColor = CardGlass.copy(0.5f)) {
                     Text("INTEL SUMMARY", fontSize = 10.sp, color = TextMuted, fontWeight = FontWeight.Black, letterSpacing = 1.2.sp)
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(report.description, fontSize = 15.sp, color = Color.White, lineHeight = 24.sp)
                 }
 
-                // ── Evidence Section ────────
+
                 if (report.evidenceUrls.isNotEmpty()) {
                     Column {
                         Text("ATTACHED EVIDENCE", fontSize = 11.sp, color = TextMuted, fontWeight = FontWeight.Black, modifier = Modifier.padding(bottom = 12.dp))
@@ -230,7 +230,7 @@ fun RecordDetailScreen(
                     }
                 }
 
-                // ── Community Flag Action ────────
+
                 DetailCard {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -268,7 +268,7 @@ fun RecordDetailScreen(
                     }
                 }
 
-                // ── Metadata Card ────────
+
                 DetailCard(containerColor = Color.Transparent) {
                     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                         Text("SYSTEM METRICS", fontSize = 10.sp, color = ElectricBlue, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
