@@ -20,9 +20,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.witnessitproject.ui.theme.data.AuthViewModel.Companion.ADMIN_EMAIL
+import com.example.witnessitproject.ui.theme.navigation.ROUTE_ADMIN
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_DASHBOARD
+import com.example.witnessitproject.ui.theme.navigation.ROUTE_LOGIN
 import com.example.witnessitproject.ui.theme.navigation.ROUTE_SPLASH_SCREEN
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
+
 
 // ── Unified WitnessIt Vibrant Theme ───────────────────────────
 private val DeepSpace    = Color(0xFF020617)
@@ -65,8 +70,24 @@ fun SplashScreen(navController: NavController) {
 
         delay(2500L) // Boot-up delay
 
-        navController.navigate(ROUTE_DASHBOARD) {
-            popUpTo(ROUTE_SPLASH_SCREEN) { inclusive = true }
+        // ✅ Only addition — check Firebase auth state before navigating
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        when {
+            currentUser == null -> {
+                navController.navigate(ROUTE_LOGIN) {
+                    popUpTo(ROUTE_SPLASH_SCREEN) { inclusive = true }
+                }
+            }
+            currentUser.email?.trim()?.lowercase() == ADMIN_EMAIL -> {
+                navController.navigate(ROUTE_ADMIN) {
+                    popUpTo(ROUTE_SPLASH_SCREEN) { inclusive = true }
+                }
+            }
+            else -> {
+                navController.navigate(ROUTE_DASHBOARD) {
+                    popUpTo(ROUTE_SPLASH_SCREEN) { inclusive = true }
+                }
+            }
         }
     }
 

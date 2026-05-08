@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 class AuthViewModel: ViewModel() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     companion object {
-        const val ADMIN_EMAIL = "admin@thesamaritan.com" // ✅ your admin email
+        const val ADMIN_EMAIL = "admin@thesamaritan.com"
         const val WEB_CLIENT_ID = "205381490369-bb8iv3sgpfn47eish0ae3ape7gcid50s.apps.googleusercontent.com"
 
     }
@@ -92,7 +92,6 @@ class AuthViewModel: ViewModel() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(context, "Login Successful", Toast.LENGTH_LONG).show()
-                    // Check if admin email
                     if (email.trim().lowercase() == ADMIN_EMAIL) {
                         navController.navigate(ROUTE_ADMIN) {
                             popUpTo(0) { inclusive = true }
@@ -115,7 +114,7 @@ class AuthViewModel: ViewModel() {
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
     fun logout() {
-        auth.signOut()                  // clears Firebase session
+        auth.signOut()
         _isLoggedIn.value = false
     }
     fun signInWithGoogle(
@@ -153,13 +152,13 @@ class AuthViewModel: ViewModel() {
                             val email = firebaseUser.email ?: ""
                             val username = firebaseUser.displayName ?: email.substringBefore("@")
 
-                            // Save user to Realtime Database if new user
+
                             val dbRef = FirebaseDatabase.getInstance()
                                 .getReference("User/$userId")
 
                             dbRef.get().addOnSuccessListener { snapshot ->
                                 if (!snapshot.exists()) {
-                                    // New Google user — save to database
+
                                     val user = UserModel(
                                         username = username,
                                         email = email,
@@ -169,7 +168,6 @@ class AuthViewModel: ViewModel() {
                                     dbRef.setValue(user)
                                 }
 
-                                // Navigate based on admin check
                                 Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
                                 if (email.trim().lowercase() == ADMIN_EMAIL) {
                                     navController.navigate(ROUTE_ADMIN) {

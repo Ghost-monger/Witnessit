@@ -60,6 +60,7 @@ fun RecordDetailScreen(
     val context = LocalContext.current
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
+
     LaunchedEffect(Unit) {
         if (viewModel.reports.isEmpty()) {
             viewModel.fetchReports(context)
@@ -248,14 +249,21 @@ fun RecordDetailScreen(
                             )
                             Text("COMMUNITY FLAGS", fontSize = 10.sp, color = TextMuted, fontWeight = FontWeight.Black)
                         }
+                        val isUpvoted = viewModel.upvotedReportIds.contains(report.reportId)
 
                         Button(
                             onClick = { viewModel.upvoteReport(report.reportId, context) },
                             shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = AlertCoral),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isUpvoted) AlertCoral.copy(0.5f) else AlertCoral
+                            ),
                             modifier = Modifier.height(50.dp)
                         ) {
-                            Text("⚠️ FLAG TARGET", fontWeight = FontWeight.Black, letterSpacing = 1.sp)
+                            Text(
+                                text = if (isUpvoted) "✓ FLAGGED" else "⚠️ FLAG TARGET",
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 1.sp
+                            )
                         }
                     }
                 }

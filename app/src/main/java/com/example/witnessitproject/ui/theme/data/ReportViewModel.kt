@@ -41,7 +41,10 @@ class ReportViewModel : ViewModel() {
     private val _myReports = mutableStateListOf<ReportModel>()
     val myReports: List<ReportModel> = _myReports
 
-    // Submit report — uploads images to Cloudinary then saves to Firestore
+    // Prevents double-tap race condition on upvote
+    private val _processingUpvotes = mutableSetOf<String>()
+
+
     fun submitReport(
         imageUris: List<Uri>,
         scamType: String,
@@ -52,7 +55,7 @@ class ReportViewModel : ViewModel() {
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Upload all images first
+
                 val imageUrls = mutableListOf<String>()
                 imageUris.forEachIndexed { index, uri ->
                     withContext(Dispatchers.Main) {
@@ -66,7 +69,7 @@ class ReportViewModel : ViewModel() {
                     imageUrls.add(url)
                 }
 
-                // Build report map
+
                 val userId = auth.currentUser?.uid ?: return@launch
                 val report = hashMapOf(
                     "scamType" to scamType,
@@ -175,40 +178,97 @@ class ReportViewModel : ViewModel() {
     // Upvote toggle — no await, pure callbacks
     fun upvoteReport(reportId: String, context: Context) {
         val userId = auth.currentUser?.uid ?: return
+
+        // Prevent double-tap race condition with a local lock
+        if (_processingUpvotes.contains(reportId)) return
+        _processingUpvotes.add(reportId)
+
         val upvoteRef = firestore
             .collection("reports")
             .document(reportId)
             .collection("upvotes")
-            .document(userId)
+            .document(userId) // one document per user — natural dedup
 
-        // Check if already upvoted
         upvoteRef.get()
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
-                    // Already upvoted — remove it
+                    // ── Toggle OFF ──────────────────────────
                     upvoteRef.delete()
-                    firestore.collection("reports")
-                        .document(reportId)
-                        .update("upvotes", FieldValue.increment(-1))
+                        .addOnSuccessListener {
+                            firestore.collection("reports")
+                                .document(reportId)
+                                .update("upvotes", FieldValue.increment(-1))
+                                .addOnSuccessListener {
+                                    // Update local state immediately
+                                    updateLocalUpvoteCount(reportId, -1)
+                                    _upvotedReportIds.remove(reportId)
+                                    _processingUpvotes.remove(reportId)
+                                }
+                                .addOnFailureListener {
+                                    _processingUpvotes.remove(reportId)
+                                    Toast.makeText(context, "Flag failed", Toast.LENGTH_SHORT).show()
+                                }
+                        }
+                        .addOnFailureListener {
+                            _processingUpvotes.remove(reportId)
+                        }
                 } else {
-                    // New upvote — add it
+                    // ── Toggle ON ───────────────────────────
                     upvoteRef.set(
                         mapOf(
                             "userId" to userId,
                             "timestamp" to Timestamp.now()
                         )
                     )
-                    firestore.collection("reports")
-                        .document(reportId)
-                        .update("upvotes", FieldValue.increment(1))
                         .addOnSuccessListener {
-                            fetchReports(context) // refresh feed
+                            firestore.collection("reports")
+                                .document(reportId)
+                                .update("upvotes", FieldValue.increment(1))
+                                .addOnSuccessListener {
+                                    // Update local state immediately
+                                    updateLocalUpvoteCount(reportId, 1)
+                                    _upvotedReportIds.add(reportId)
+                                    _processingUpvotes.remove(reportId)
+                                }
+                                .addOnFailureListener {
+                                    // Rollback the upvote doc if count update failed
+                                    upvoteRef.delete()
+                                    _processingUpvotes.remove(reportId)
+                                    Toast.makeText(context, "Flag failed", Toast.LENGTH_SHORT).show()
+                                }
+                        }
+                        .addOnFailureListener {
+                            _processingUpvotes.remove(reportId)
+                            Toast.makeText(context, "Flag failed", Toast.LENGTH_SHORT).show()
                         }
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(context, "Upvote failed", Toast.LENGTH_SHORT).show()
+                _processingUpvotes.remove(reportId)
+                Toast.makeText(context, "Flag failed", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    // Updates upvote count in all local lists simultaneously
+    private fun updateLocalUpvoteCount(reportId: String, delta: Int) {
+        val reportIndex = _reports.indexOfFirst { it.reportId == reportId }
+        if (reportIndex != -1) {
+            _reports[reportIndex] = _reports[reportIndex].copy(
+                upvotes = _reports[reportIndex].upvotes + delta
+            )
+        }
+        val myIndex = _myReports.indexOfFirst { it.reportId == reportId }
+        if (myIndex != -1) {
+            _myReports[myIndex] = _myReports[myIndex].copy(
+                upvotes = _myReports[myIndex].upvotes + delta
+            )
+        }
+        val highIndex = _highPriorityReports.indexOfFirst { it.reportId == reportId }
+        if (highIndex != -1) {
+            _highPriorityReports[highIndex] = _highPriorityReports[highIndex].copy(
+                upvotes = _highPriorityReports[highIndex].upvotes + delta
+            )
+        }
     }
 
     // Delete a report
@@ -386,7 +446,7 @@ class ReportViewModel : ViewModel() {
     fun fetchHighPriorityReports(context: Context) {
         firestore.collection("reports")
             .whereEqualTo("status", "approved")
-            .whereGreaterThanOrEqualTo("upvotes", 50)
+            .whereGreaterThanOrEqualTo("upvotes", 20)
             .orderBy("upvotes", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { snapshot ->
@@ -407,4 +467,39 @@ class ReportViewModel : ViewModel() {
                 ).show()
             }
     }
+    // Tracks which reportIds the current user has upvoted
+    private val _upvotedReportIds = mutableStateListOf<String>()
+    val upvotedReportIds: List<String> = _upvotedReportIds
+
+    // Call this when home screen loads
+    fun fetchUserUpvotes(context: Context) {
+        val userId = auth.currentUser?.uid ?: return
+
+        // Instead of collectionGroup query — check each report individually
+        // This runs silently in background, no index needed
+        firestore.collection("reports")
+            .whereEqualTo("status", "approved")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                for (doc in snapshot.documents) {
+                    val reportId = doc.id
+                    firestore.collection("reports")
+                        .document(reportId)
+                        .collection("upvotes")
+                        .document(userId)
+                        .get()
+                        .addOnSuccessListener { upvoteDoc ->
+                            if (upvoteDoc.exists()) {
+                                if (!_upvotedReportIds.contains(reportId)) {
+                                    _upvotedReportIds.add(reportId)
+                                }
+                            }
+                        }
+                }
+            }
+            .addOnFailureListener {
+                // Silently fail — not critical
+            }
+    }
 }
+

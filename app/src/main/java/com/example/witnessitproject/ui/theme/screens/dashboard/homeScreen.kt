@@ -48,12 +48,15 @@ fun HomeScreen(navController: NavController) {
     val context = LocalContext.current
     val reports = viewModel.reports
 
+
+
     var selectedFilter by remember { mutableStateOf("All") }
     val filters = listOf("All", "M-Pesa", "Phone", "Website", "Email", "Other")
     var showMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.fetchReports(context)
+        viewModel.fetchUserUpvotes(context)
     }
 
     val filteredReports = if (selectedFilter == "All") reports else reports.filter { it.scamType == selectedFilter }
@@ -228,7 +231,8 @@ fun HomeScreen(navController: NavController) {
 }
 
 @Composable
-fun ReportCard(report: ReportModel, context: Context, viewModel: ReportViewModel, onClick: () -> Unit) {
+fun ReportCard(report: ReportModel, context: Context, viewModel: ReportViewModel, onClick: () -> Unit)
+{val isUpvoted = viewModel.upvotedReportIds.contains(report.reportId)
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -276,14 +280,28 @@ fun ReportCard(report: ReportModel, context: Context, viewModel: ReportViewModel
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
-                        .background(AlertCoral.copy(0.12f))
+                        .background(
+                            if (isUpvoted) AlertCoral.copy(0.3f)  // ✅ darker when flagged
+                            else AlertCoral.copy(0.12f)
+                        )
                         .clickable { viewModel.upvoteReport(report.reportId, context) }
                         .padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Warning, null, tint = AlertCoral, modifier = Modifier.size(16.dp))
+                    Icon(
+                        Icons.Default.Warning,
+                        null,
+                        tint = AlertCoral,
+                        modifier = Modifier.size(16.dp)
+                    )
                     Spacer(Modifier.width(8.dp))
-                    Text("${report.upvotes} FLAGS", color = AlertCoral, fontSize = 12.sp, fontWeight = FontWeight.Black)
+                    Text(
+                        text = if (isUpvoted) "✓ ${report.upvotes} FLAGGED"
+                        else "${report.upvotes} FLAGS",
+                        color = AlertCoral,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Black
+                    )
                 }
                 Text(formatTimestamp(report.timestamp), color = TextDim, fontSize = 11.sp, fontWeight = FontWeight.Bold)
             }

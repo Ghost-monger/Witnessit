@@ -127,13 +127,6 @@ fun AdminScreen(navController: NavController) {
                     )
                 }
             }
-            IconButton(
-                onClick = { showLogoutDialog = true },
-                modifier = Modifier.background(CardGlass, CircleShape).border(1.dp,
-                    BorderGlass, CircleShape)
-            ) {
-                Icon(Icons.AutoMirrored.Filled.ExitToApp, "Logout", tint = AlertCoral)
-            }
         }
 
         Spacer(Modifier.height(20.dp))
