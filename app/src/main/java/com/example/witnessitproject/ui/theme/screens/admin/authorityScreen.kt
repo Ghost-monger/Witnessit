@@ -135,6 +135,7 @@ fun AuthorityScreen(navController: NavController) {
                 items(items = highPriorityReports, key = { it.reportId }) { report ->
                     AuthorityReportCard(
                         report = report,
+                        navController = navController,
                         onShare = {
                             val formalReport = buildFormalReport(report)
                             val intent = Intent(Intent.ACTION_SEND).apply {
@@ -152,10 +153,12 @@ fun AuthorityScreen(navController: NavController) {
 }
 
 @Composable
-fun AuthorityReportCard(report: ReportModel, onShare: () -> Unit) {
+fun AuthorityReportCard(report: ReportModel, onShare: () -> Unit,
+navController: NavController) {
     val isExtreme = report.upvotes >= 100
 
     Card(
+        onClick = { navController.navigate("report_detail/${report.reportId}") },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = CardGlass),

@@ -61,13 +61,20 @@ fun RecordDetailScreen(
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
 
+
     LaunchedEffect(Unit) {
         if (viewModel.reports.isEmpty()) {
             viewModel.fetchReports(context)
         }
+        if (viewModel.myReports.isEmpty()) {
+            viewModel.fetchMyReports(context)
+        }
     }
 
     val report = viewModel.reports.find { it.reportId == reportId }
+        ?: viewModel.myReports.find { it.reportId == reportId }
+        ?: viewModel.pendingReports.find { it.reportId == reportId }
+        ?: viewModel.highPriorityReports.find { it.reportId == reportId }
 
     if (report == null) {
         Box(modifier = Modifier.fillMaxSize().background(DeepSpace), contentAlignment = Alignment.Center) {
@@ -265,6 +272,7 @@ fun RecordDetailScreen(
                                 letterSpacing = 1.sp
                             )
                         }
+
                     }
                 }
 

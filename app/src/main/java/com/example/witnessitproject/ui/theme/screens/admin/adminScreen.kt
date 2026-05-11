@@ -147,7 +147,9 @@ fun AdminScreen(navController: NavController) {
                         description = report.description,
                         evidenceCount = report.evidenceUrls.size,
                         onApprove = { viewModel.approveReport(report.reportId, context) },
-                        onReject = { viewModel.rejectReport(report.reportId, context) }
+                        onReject = { viewModel.rejectReport(report.reportId, context) },
+                        navController = navController,
+                        reportId = report.reportId
                     )
                 }
             }
@@ -162,9 +164,13 @@ fun AdminReportCard(
     description: String,
     evidenceCount: Int,
     onApprove: () -> Unit,
-    onReject: () -> Unit
-) {
+    onReject: () -> Unit,
+    navController: NavController,
+    reportId: String,
+
+    ) {
     Card(
+        onClick = { navController.navigate("report_detail/$reportId") },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = CardGlass),
